@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Abdallah Elsayed" />
+  <meta name="description"
+    content="I'm a UI Developer with a passion for creating beautiful and user-friendly interfaces. I have extensive experience in UI & UX design and graphic design. I enjoy turning ideas into amazing digital experiences that people love to use. Let's work together to create something great" />
+  <meta name="keywords"
+    content="Web designer, UI Developer, UI&UX Designer, Product Designer , Designer , Brand Designer, identity Designer , UX Resercher , Ux Designer , Visual Desiner , UI Designer , Graphic Designer " />
+
+  <!-- Social share meta -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Abdallah Elsayed’s Portfolio" />
+  <meta property="og:description"
+    content="I'm a UI Developer with a passion for creating beautiful and user-friendly interfaces. Let's work together to create something great" />
+  <meta property="og:image" content="./assets/images/logo.ico" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Abdallah Elsayed’s Portfolio" />
+  <meta name="twitter:image" content="./assets/images/logo.ico" />
+
+  <title>Abdallah Elsayed Portfolio</title>
+
+  <!-- Run the website full-screen when saved to the iOS home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="./assets/images/logo.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./assets/images/logo.ico">
+
+  <!-- Icon fonts -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body>
+
+  <!-- Animated background (particles.js) -->
+  <div id="particles-js"></div>
+
+  <main>
+
+    <!-- ================================================================
+         SIDEBAR — photo, name, contacts and social links
+         All values come from data/content.js (edit them in /admin)
+         ================================================================ -->
+    <aside class="sidebar" data-sidebar>
+
+      <div class="sidebar-info">
+        <figure class="avatar-box">
+          <img src="./assets/images/Abdallah.png" alt="" width="100" data-profile-avatar>
+        </figure>
+
+        <div class="info-content">
+          <h1 class="name" data-profile-name></h1>
+          <p class="title" data-profile-title></p>
+        </div>
+
+        <!-- Mobile only: expands the contacts panel -->
+        <button class="info_more-btn" data-sidebar-btn>
+          <span>Show Contacts</span>
+          <ion-icon name="chevron-down"></ion-icon>
+        </button>
+      </div>
+
+      <div class="sidebar-info_more">
+        <div class="separator"></div>
+        <ul class="contacts-list" data-contacts-list></ul>
+        <div class="separator"></div>
+        <ul class="social-list" data-social-list></ul>
+      </div>
+
+    </aside>
+
+
+    <div class="main-content">
+
+      <!-- ================================================================
+           NAVBAR — switches between the four pages below
+           ================================================================ -->
+      <nav class="navbar">
+        <ul class="navbar-list">
+          <li class="navbar-item"><button class="navbar-link active" data-nav-link>About</button></li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link>Resume</button></li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link>Portfolio</button></li>
+          <li class="navbar-item"><button class="navbar-link" data-nav-link>Contact</button></li>
+        </ul>
+      </nav>
+
+
+      <!-- ================================================================
+           ABOUT PAGE
+           ================================================================ -->
+      <article class="about active" data-page="about">
+
+        <header>
+          <h2 class="h2 article-title">About me</h2>
+        </header>
+
+        <!-- About text -->
+        <section class="about-text">
+          <p data-about-text></p>
+        </section>
+
+        <!-- Services ("What I'm doing") -->
+        <section class="service">
+          <h3 class="h3 service-title">What i'm doing</h3>
+          <ul class="service-list" data-service-list></ul>
+        </section>
+
+        <!-- Certifications (click one to open it in the modal) -->
+        <section class="testimonials" data-certifications>
+          <h3 class="h3 testimonials-title">Certifications</h3>
+          <ul class="testimonials-list has-scrollbar" data-certification-list></ul>
+        </section>
+
+        <!-- Certification modal -->
+        <div class="modal-container" data-modal-container>
+          <div class="overlay" data-overlay></div>
+          <section class="testimonials-modal">
+            <button class="modal-close-btn" data-modal-close-btn>
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div class="modal-content">
+              <div data-modal-text></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Download CV -->
+        <section data-cv-section>
+          <ul class="facts-list Resume-download">
+            <li class="facts-item">
+              <div class="facts-icon-box">
+                <img src="./assets/images/download-logo.svg" alt="Download icon" width="40" loading="lazy" />
+              </div>
+              <div class="facts-content-box">
+                <h5 class="h5 facts-item-title">
+                  <a href="#" target="_blank" download data-cv-link>Download My Resume</a>
+                </h5>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+      </article>
+
+
+      <!-- ================================================================
+           RESUME PAGE
+           ================================================================ -->
+      <article class="resume" data-page="resume">
+
+        <header>
+          <h2 class="h2 article-title">Resume</h2>
+        </header>
+
+        <!-- Education -->
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="book-outline"></ion-icon></div>
+            <h3 class="h3">Education</h3>
+          </div>
+          <ol class="timeline-list" data-education-list></ol>
+        </section>
+
+        <!-- Experience -->
+        <section class="timeline">
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="diamond-outline"></ion-icon></div>
+            <h3 class="h3">Experience</h3>
+          </div>
+          <ol class="timeline-list" data-experience-list></ol>
+        </section>
+
+        <!-- Skills -->
+        <section class="skill">
+          <h3 class="h3 skills-title">My skills</h3>
+          <ul class="skills-list content-card" data-skill-list></ul>
+        </section>
+
+      </article>
+
+
+      <!-- ================================================================
+           PORTFOLIO PAGE
+           ================================================================ -->
+      <article class="portfolio" data-page="portfolio">
+
+        <header>
+          <h2 class="h2 article-title">Portfolio</h2>
+        </header>
+
+        <section class="projects">
+
+          <!-- Category buttons (desktop) -->
+          <ul class="filter-list" data-filter-list></ul>
+
+          <!-- Category dropdown (mobile) -->
+          <div class="filter-select-box">
+            <button class="filter-select" data-select>
+              <div class="select-value" data-selecct-value>Select category</div>
+              <div class="select-icon"><ion-icon name="chevron-down"></ion-icon></div>
+            </button>
+            <ul class="select-list" data-select-list></ul>
+          </div>
+
+          <!-- Projects -->
+          <ul class="project-list" data-project-list></ul>
+
+        </section>
+
+      </article>
+
+
+      <!-- ================================================================
+           CONTACT PAGE
+           ================================================================ -->
+      <article class="contact" data-page="contact">
+
+        <header>
+          <h2 class="h2 article-title">Contact</h2>
+        </header>
+
+        <section class="mapbox" data-mapbox>
+          <figure>
+            <iframe title="Map"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110502.76973610223!2d31.188423958778234!3d30.05946989057207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583fa60b21beeb%3A0x79dfb296e8423bba!2sCairo%2C%20Cairo%20Governorate!5e0!3m2!1sen!2seg!4v1658601508049!5m2!1sen!2seg"
+              width="600" height="300" loading="lazy"></iframe>
+          </figure>
+        </section>
+
+        <section class="contact-form">
+          <h3 class="h3 form-title">Contact Form</h3>
+
+          <form action="#" class="form" data-form>
+            <div class="input-wrapper">
+              <input type="text" name="fullname" class="form-input" placeholder="Full name" required data-form-input
+                id="C_name" autocomplete="off">
+              <input type="email" name="email" class="form-input" placeholder="Email address" required
+                data-form-input id="C_mail" autocomplete="off">
+            </div>
+
+            <textarea name="message" class="form-input" placeholder="Your Message" required data-form-input
+              id="C_message"></textarea>
+
+            <button class="form-btn" type="submit" disabled data-form-btn>
+              <ion-icon name="paper-plane"></ion-icon>
+              <span>Send Message</span>
+            </button>
+          </form>
+        </section>
+
+      </article>
+
+    </div>
+
+  </main>
+
+
+  <!-- ==================================================================
+       TEMPLATES
+       Markup for repeated items. assets/js/render.js clones these and
+       fills the [data-slot] elements with values from data/content.js.
+       ================================================================== -->
+
+  <!-- Contact row with a link (email, phone) -->
+  <template id="tpl-contact-link">
+    <li class="contact-item">
+      <div class="icon-box"><ion-icon data-slot="icon"></ion-icon></div>
+      <div class="contact-info">
+        <p class="contact-title" data-slot="label"></p>
+        <a class="contact-link" data-slot="value"></a>
+      </div>
+    </li>
+  </template>
+
+  <!-- Contact row without a link (location) -->
+  <template id="tpl-contact-address">
+    <li class="contact-item">
+      <div class="icon-box"><ion-icon data-slot="icon"></ion-icon></div>
+      <div class="contact-info">
+        <p class="contact-title" data-slot="label"></p>
+        <address data-slot="value"></address>
+      </div>
+    </li>
+  </template>
+
+  <!-- Social link icon -->
+  <template id="tpl-social">
+    <li class="social-item">
+      <a class="social-link" target="_blank" rel="noopener" data-slot="link">
+        <ion-icon data-slot="icon"></ion-icon>
+      </a>
+    </li>
+  </template>
+
+  <!-- Service card -->
+  <template id="tpl-service">
+    <li class="service-item">
+      <div class="service-icon-box">
+        <img width="40" alt="" data-slot="icon">
+      </div>
+      <div class="service-content-box">
+        <h4 class="h4 service-item-title" data-slot="title"></h4>
+        <p class="service-item-text" data-slot="text"></p>
+      </div>
+    </li>
+  </template>
+
+  <!-- Certification card -->
+  <template id="tpl-certification">
+    <li class="testimonials-item">
+      <div class="content-card" data-testimonials-item>
+        <figure class="testimonials-avatar-box"></figure>
+        <h4 class="h4 testimonials-item-title" data-slot="title"></h4>
+        <div class="testimonials-text" data-testimonials-text>
+          <img width="100%" alt="" loading="lazy" data-slot="image">
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <!-- Education / experience entry -->
+  <template id="tpl-timeline">
+    <li class="timeline-item">
+      <h4 class="h4 timeline-item-title" data-slot="title"></h4>
+      <span data-slot="period"></span>
+      <p class="timeline-text" data-slot="text"></p>
+    </li>
+  </template>
+
+  <!-- Skill bar -->
+  <template id="tpl-skill">
+    <li class="skills-item">
+      <div class="title-wrapper">
+        <h5 class="h5" data-slot="name"></h5>
+        <data data-slot="value"></data>
+      </div>
+      <div class="skill-progress-bg">
+        <div class="skill-progress-fill" data-slot="bar"></div>
+      </div>
+    </li>
+  </template>
+
+  <!-- Category button (desktop) -->
+  <template id="tpl-filter">
+    <li class="filter-item"><button data-filter-btn data-slot="name"></button></li>
+  </template>
+
+  <!-- Category option (mobile dropdown) -->
+  <template id="tpl-select">
+    <li class="select-item"><button data-select-item data-slot="name"></button></li>
+  </template>
+
+  <!-- Project card -->
+  <template id="tpl-project">
+    <li class="project-item active" data-filter-item>
+      <a data-slot="link">
+        <figure class="project-img">
+          <div class="project-item-icon-box"><ion-icon name="eye-outline"></ion-icon></div>
+          <img alt="" loading="lazy" data-slot="image">
+        </figure>
+        <h3 class="project-title" data-slot="title"></h3>
+        <p class="project-category" data-slot="category"></p>
+      </a>
+    </li>
+  </template>
+
+
+  <!-- ==================================================================
+       SCRIPTS
+       ================================================================== -->
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+    integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="./assets/js/particles.js"></script>
+  <script src="https://smtpjs.com/v3/smtp.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+  <!-- 1. Content (edited from the dashboard)  2. Builds the page  3. Interactions -->
+  <script src="./data/content.js"></script>
+  <script src="./assets/js/render.js"></script>
+  <script src="./assets/js/script.js"></script>
+
+</body>
+
+</html>

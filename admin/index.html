@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Portfolio Dashboard</title>
+  <link rel="shortcut icon" href="../assets/images/logo.ico" type="image/x-icon">
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Dashboard styles -->
+  <link rel="stylesheet" href="./admin.css">
+</head>
+
+<body>
+
+  <!-- ====================================================================
+       LOADING SCREEN — shown while the content is fetched from GitHub
+       ==================================================================== -->
+  <div class="center" id="loading-screen">
+    <span class="spin"></span>
+  </div>
+
+
+  <!-- ====================================================================
+       LOGIN SCREEN — connect the dashboard to the GitHub repo
+       ==================================================================== -->
+  <main class="login" id="login-screen" hidden>
+    <form class="login-card" id="login-form" novalidate>
+
+      <h1>Portfolio dashboard</h1>
+      <p class="login-sub">Connect to the GitHub repo that hosts your site.</p>
+
+      <ol class="steps">
+        <li>Open <a id="token-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank"
+            rel="noopener">GitHub → New fine-grained token</a>.</li>
+        <li>Repository access: <b>Only select repositories</b> → pick your portfolio repo.</li>
+        <li>Permissions → Repository → <b>Contents: Read and write</b>.</li>
+        <li>Generate, copy the token and paste it below.</li>
+      </ol>
+
+      <div class="row">
+        <label class="field">
+          <span>GitHub username</span>
+          <input type="text" name="owner" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="field">
+          <span>Repository name</span>
+          <input type="text" name="repo" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span>Branch</span>
+          <input type="text" name="branch" value="main" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="field">
+          <span>Access token</span>
+          <input type="password" name="token" placeholder="github_pat_…" autocomplete="off">
+        </label>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" name="remember" checked>
+        Remember me on this device
+      </label>
+
+      <small class="hint err login-error" id="login-error"></small>
+
+      <button class="btn primary btn-block" type="submit" id="login-button">
+        <span class="spin" hidden></span>
+        <span class="btn-label">Connect</span>
+      </button>
+
+    </form>
+  </main>
+
+
+  <!-- ====================================================================
+       DASHBOARD
+       ==================================================================== -->
+  <div class="app" id="app-screen" hidden>
+
+    <!-- ---------------- Sidebar ---------------- -->
+    <aside class="side">
+
+      <div class="brand">
+        <img id="brand-avatar" alt="">
+        <div>
+          <b id="brand-name">My portfolio</b>
+          <small>Dashboard</small>
+        </div>
+      </div>
+
+      <button class="nav" type="button" data-view="projects">
+        <ion-icon name="grid-outline"></ion-icon><span class="nav-label">Projects</span>
+        <span class="count" data-count="projects"></span>
+      </button>
+      <button class="nav" type="button" data-view="categories">
+        <ion-icon name="pricetags-outline"></ion-icon><span class="nav-label">Categories</span>
+        <span class="count" data-count="categories"></span>
+      </button>
+      <button class="nav" type="button" data-view="profile">
+        <ion-icon name="person-circle-outline"></ion-icon><span class="nav-label">Profile</span>
+      </button>
+      <button class="nav" type="button" data-view="links">
+        <ion-icon name="share-social-outline"></ion-icon><span class="nav-label">Social links</span>
+        <span class="count" data-count="socials"></span>
+      </button>
+      <button class="nav" type="button" data-view="about">
+        <ion-icon name="document-text-outline"></ion-icon><span class="nav-label">About &amp; services</span>
+      </button>
+      <button class="nav" type="button" data-view="certs">
+        <ion-icon name="ribbon-outline"></ion-icon><span class="nav-label">Certificates</span>
+        <span class="count" data-count="certifications"></span>
+      </button>
+      <button class="nav" type="button" data-view="resume">
+        <ion-icon name="briefcase-outline"></ion-icon><span class="nav-label">Resume</span>
+      </button>
+      <button class="nav" type="button" data-view="skills">
+        <ion-icon name="bar-chart-outline"></ion-icon><span class="nav-label">Skills</span>
+      </button>
+
+      <div class="side-foot">
+        <a class="nav" id="site-link" href="../" target="_blank" rel="noopener">
+          <ion-icon name="open-outline"></ion-icon>View live site
+        </a>
+        <button class="nav" type="button" id="backup-button">
+          <ion-icon name="download-outline"></ion-icon>Download backup
+        </button>
+        <button class="nav" type="button" id="logout-button">
+          <ion-icon name="log-out-outline"></ion-icon>Log out
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ---------------- Main area ---------------- -->
+    <div class="main">
+
+      <header class="top">
+        <h2 id="view-title">Projects</h2>
+        <div class="status" id="status" role="status"></div>
+        <button class="btn primary" type="button" id="publish-button" disabled>
+          <span class="spin" hidden></span>
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          <span class="btn-label">Publish</span>
+        </button>
+      </header>
+
+      <div class="content">
+
+        <!-- ======== PROJECTS ======== -->
+        <section class="panel" data-panel="projects">
+          <div class="toolbar">
+            <input class="input" type="search" id="project-search" placeholder="Search projects…">
+            <button class="btn primary" type="button" data-action="add-project">
+              <ion-icon name="add"></ion-icon>Add project
+            </button>
+          </div>
+
+          <div class="chips" id="category-chips"></div>
+
+          <div class="proj-grid" id="project-grid">
+            <button class="add-tile" type="button" data-action="add-project">
+              <span class="add-tile-inner"><ion-icon name="add-circle-outline"></ion-icon>New project</span>
+            </button>
+          </div>
+
+          <p class="hint empty-note" id="no-projects" hidden>No projects match this filter.</p>
+        </section>
+
+        <!-- ======== CATEGORIES ======== -->
+        <section class="panel" data-panel="categories" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Portfolio categories</h3>
+                <p>These become the filter buttons on your Portfolio page. Empty categories are hidden on the site.</p>
+              </div>
+            </div>
+            <div class="list" id="category-list"></div>
+            <div class="add-row">
+              <input class="input" id="new-category" placeholder="New category, e.g. Mobile Apps">
+              <button class="btn" type="button" id="add-category"><ion-icon name="add"></ion-icon>Add</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======== PROFILE ======== -->
+        <section class="panel" data-panel="profile" hidden>
+
+          <div class="card">
+            <div class="card-head"><h3>Photo &amp; name</h3></div>
+            <div class="grid-2">
+              <div class="field">
+                <span>Profile picture</span>
+                <div class="img-pick round drop" data-image="profile.avatar" data-max-width="600" data-file-name="avatar">
+                  <div class="thumb"><img alt="" hidden><ion-icon name="image-outline"></ion-icon></div>
+                  <div class="acts">
+                    <button class="btn sm" type="button" data-pick><ion-icon name="cloud-upload-outline"></ion-icon>Upload</button>
+                    <small class="hint">or drag an image here</small>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="field"><span>Full name</span><input type="text" data-bind="profile.name"></label>
+                <label class="field">
+                  <span>Job title</span>
+                  <input type="text" data-bind="profile.title">
+                  <small class="hint">Use | to separate roles, e.g. UI Developer | UI&amp;UX Designer</small>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Contact info</h3>
+                <p>Shown under "Show Contacts" in your sidebar. Leave a field empty to hide it.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <label class="field"><span>Email</span><input type="email" data-bind="profile.email"></label>
+              <label class="field"><span>Phone</span><input type="text" data-bind="profile.phone"></label>
+              <label class="field"><span>Location</span><input type="text" data-bind="profile.location"></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Resume file</h3></div>
+            <div class="field">
+              <span>CV / Resume (PDF)</span>
+              <div class="cv-row">
+                <a class="btn sm" id="cv-link" target="_blank" rel="noopener"><ion-icon name="document-outline"></ion-icon><span id="cv-name"></span></a>
+                <span class="hint" id="cv-empty">No CV uploaded</span>
+                <button class="btn sm" type="button" id="cv-upload"><ion-icon name="cloud-upload-outline"></ion-icon>Upload PDF</button>
+                <button class="btn sm danger" type="button" id="cv-remove" data-confirm-label="Click again to remove">Remove</button>
+              </div>
+              <small class="hint">Visitors download this from the "Download My Resume" button.</small>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ======== SOCIAL LINKS ======== -->
+        <section class="panel" data-panel="links" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Social links</h3>
+                <p>Dribbble, Behance, LinkedIn, GitHub… they appear as icons in your sidebar.</p>
+              </div>
+            </div>
+            <div class="list" id="socials-list"></div>
+            <button class="btn sm list-add" type="button" data-add="socials"><ion-icon name="add"></ion-icon>Add link</button>
+          </div>
+        </section>
+
+        <!-- ======== ABOUT & SERVICES ======== -->
+        <section class="panel" data-panel="about" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>About me</h3>
+                <p>The paragraph at the top of your About page.</p>
+              </div>
+            </div>
+            <label class="field"><span>About text</span><textarea rows="5" data-bind="about"></textarea></label>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>What I'm doing</h3>
+                <p>Your services cards.</p>
+              </div>
+            </div>
+            <div class="list" id="services-list"></div>
+            <button class="btn sm list-add" type="button" data-add="services"><ion-icon name="add"></ion-icon>Add service</button>
+          </div>
+        </section>
+
+        <!-- ======== CERTIFICATES ======== -->
+        <section class="panel" data-panel="certs" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Certificates</h3>
+                <p>Click a certificate image to replace it.</p>
+              </div>
+            </div>
+            <div class="cert-grid" id="cert-grid">
+              <button class="add-tile drop" type="button" id="add-cert">
+                <span class="add-tile-inner">
+                  <ion-icon name="add-circle-outline"></ion-icon>Add certificate
+                  <small class="hint">or drop an image</small>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======== RESUME ======== -->
+        <section class="panel" data-panel="resume" hidden>
+          <div class="card">
+            <div class="card-head"><h3>Education</h3></div>
+            <div class="list" id="education-list"></div>
+            <button class="btn sm list-add" type="button" data-add="education"><ion-icon name="add"></ion-icon>Add education</button>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Experience</h3>
+                <p>Newest first looks best.</p>
+              </div>
+            </div>
+            <div class="list" id="experience-list"></div>
+            <button class="btn sm list-add" type="button" data-add="experience"><ion-icon name="add"></ion-icon>Add experience</button>
+          </div>
+        </section>
+
+        <!-- ======== SKILLS ======== -->
+        <section class="panel" data-panel="skills" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>My skills</h3>
+                <p>Drag the slider to set the percentage.</p>
+              </div>
+            </div>
+            <div class="list" id="skills-list"></div>
+            <button class="btn sm list-add" type="button" data-add="skills"><ion-icon name="add"></ion-icon>Add skill</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       PROJECT DIALOG — add / edit one project
+       ==================================================================== -->
+  <dialog id="project-dialog">
+    <form id="project-form" novalidate>
+
+      <div class="dlg-head">
+        <h3 id="project-dialog-title">New project</h3>
+        <button class="icon-btn" type="button" title="Close" data-close-dialog><ion-icon name="close"></ion-icon></button>
+      </div>
+
+      <div class="dlg-body">
+        <div class="big-cover drop" id="project-cover">
+          <img alt="" hidden>
+          <span class="big-cover-empty"><ion-icon name="image-outline"></ion-icon>Click or drop the project cover image</span>
+        </div>
+        <small class="hint cover-hint">Large images are resized and converted to WebP automatically.</small>
+
+        <label class="field">
+          <span>Project title</span>
+          <input type="text" name="title" placeholder="e.g. Coffee Shop Landing">
+        </label>
+
+        <label class="field">
+          <span>Category</span>
+          <select name="category"></select>
+          <input type="text" name="newCategory" class="new-category-input" placeholder="New category name" hidden>
+        </label>
+
+        <label class="field">
+          <span>Live link (optional)</span>
+          <input type="url" name="link" placeholder="https://… (Dribbble, Behance, live site)">
+          <small class="hint">Leave empty if there's no link.</small>
+        </label>
+
+        <label class="check check-tight">
+          <input type="checkbox" name="hidden">
+          Hide from the site (keep as draft)
+        </label>
+
+        <small class="hint err" id="project-error"></small>
+      </div>
+
+      <div class="dlg-foot">
+        <button class="btn sm danger" type="button" id="project-delete" data-confirm-label="Click again to delete">Delete project</button>
+        <span class="sp"></span>
+        <button class="btn" type="button" data-close-dialog>Cancel</button>
+        <button class="btn primary" type="submit" id="project-save">Done</button>
+      </div>
+
+    </form>
+  </dialog>
+
+
+  <!-- ====================================================================
+       TEMPLATES — cloned by admin.js for every repeated item
+       ==================================================================== -->
+
+  <!-- Category filter chip (Projects page) -->
+  <template id="tpl-chip">
+    <button class="chip" type="button"><span data-slot="name"></span><span class="chip-count" data-slot="count"></span></button>
+  </template>
+
+  <!-- Project card -->
+  <template id="tpl-project-card">
+    <article class="proj">
+      <div class="cover" data-action="edit">
+        <img alt="" loading="lazy" data-slot="image">
+        <span class="badge" data-slot="hidden-badge">Hidden</span>
+      </div>
+      <div class="meta" data-action="edit">
+        <b data-slot="title"></b>
+        <small data-slot="category"></small>
+      </div>
+      <div class="tools">
+        <button class="icon-btn" type="button" title="Move earlier" data-action="earlier"><ion-icon name="arrow-back"></ion-icon></button>
+        <button class="icon-btn" type="button" title="Move later" data-action="later"><ion-icon name="arrow-forward"></ion-icon></button>
+        <button class="icon-btn" type="button" title="Move to first" data-action="first"><ion-icon name="arrow-up-circle-outline"></ion-icon></button>
+        <span class="sp"></span>
+        <a class="icon-btn" target="_blank" rel="noopener" title="Open live link" data-slot="link"><ion-icon name="open-outline"></ion-icon></a>
+        <button class="icon-btn" type="button" title="Edit" data-action="edit"><ion-icon name="create-outline"></ion-icon></button>
+        <button class="icon-btn danger" type="button" title="Delete" data-action="delete"><ion-icon name="trash-outline"></ion-icon></button>
+      </div>
+    </article>
+  </template>
+
+  <!-- Category row (Categories page) -->
+  <template id="tpl-category">
+    <div class="item item-center">
+      <div class="item-body category-body">
+        <input class="input" data-slot="name">
+        <span class="hint" data-slot="count"></span>
+        <div class="category-move" data-slot="move">
+          <small class="hint">If deleted, move its projects to</small>
+          <select class="input input-sm" data-slot="move-to"></select>
+        </div>
+      </div>
+      <div class="item-tools item-tools-row">
+        <button class="icon-btn" type="button" title="Move up" data-action="up"><ion-icon name="chevron-up"></ion-icon></button>
+        <button class="icon-btn" type="button" title="Move down" data-action="down"><ion-icon name="chevron-down"></ion-icon></button>
+        <button class="icon-btn danger" type="button" title="Delete" data-action="delete"><ion-icon name="trash-outline"></ion-icon></button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Generic list row: the matching "fields" template goes inside .item-body -->
+  <template id="tpl-list-item">
+    <div class="item">
+      <div class="item-body"></div>
+      <div class="item-tools">
+        <button class="icon-btn" type="button" title="Move up" data-action="up"><ion-icon name="chevron-up"></ion-icon></button>
+        <button class="icon-btn" type="button" title="Move down" data-action="down"><ion-icon name="chevron-down"></ion-icon></button>
+        <button class="icon-btn danger" type="button" title="Delete" data-action="delete"><ion-icon name="trash-outline"></ion-icon></button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Fields: social link -->
+  <template id="tpl-socials-fields">
+    <div class="social-fields">
+      <div class="social-icon"><ion-icon data-slot="icon"></ion-icon></div>
+      <div class="grid-2 grow">
+        <label class="field">
+          <span>Platform</span>
+          <select data-slot="platform">
+            <option value="logo-dribbble">Dribbble</option>
+            <option value="logo-behance">Behance</option>
+            <option value="logo-linkedin">LinkedIn</option>
+            <option value="logo-github">GitHub</option>
+            <option value="logo-instagram">Instagram</option>
+            <option value="logo-facebook">Facebook</option>
+            <option value="logo-twitter">X / Twitter</option>
+            <option value="logo-youtube">YouTube</option>
+            <option value="logo-whatsapp">WhatsApp</option>
+            <option value="logo-tiktok">TikTok</option>
+            <option value="logo-medium">Medium</option>
+            <option value="logo-pinterest">Pinterest</option>
+            <option value="logo-figma">Figma</option>
+            <option value="globe-outline">Website</option>
+            <option value="link-outline">Other link</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Link</span>
+          <input type="url" data-field="url" placeholder="https://dribbble.com/yourname">
+        </label>
+      </div>
+    </div>
+  </template>
+
+  <!-- Fields: service -->
+  <template id="tpl-services-fields">
+    <div class="service-fields">
+      <div class="field">
+        <span>Icon</span>
+        <div class="img-pick icon drop" data-image-field="icon" data-max-width="200" data-file-name="service-icon">
+          <div class="thumb"><img alt="" hidden><ion-icon name="image-outline"></ion-icon></div>
+          <div class="acts">
+            <button class="btn sm" type="button" data-pick><ion-icon name="cloud-upload-outline"></ion-icon>Upload</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="field"><span>Title</span><input type="text" data-field="title"></label>
+        <label class="field"><span>Description</span><textarea rows="3" data-field="text"></textarea></label>
+      </div>
+    </div>
+  </template>
+
+  <!-- Fields: education / experience -->
+  <template id="tpl-timeline-fields">
+    <div>
+      <div class="grid-2">
+        <label class="field"><span>Title</span><input type="text" data-field="title"></label>
+        <label class="field"><span>Period</span><input type="text" data-field="period" placeholder="2022 — 2024"></label>
+      </div>
+      <label class="field"><span>Details</span><textarea rows="3" data-field="text"></textarea></label>
+    </div>
+  </template>
+
+  <!-- Fields: skill -->
+  <template id="tpl-skills-fields">
+    <div>
+      <label class="field"><span>Skill</span><input type="text" data-field="name"></label>
+      <div class="skill-row">
+        <input type="range" min="0" max="100" step="5" data-field="value" aria-label="Skill level">
+        <output data-output="value"></output>
+      </div>
+    </div>
+  </template>
+
+  <!-- Certificate card -->
+  <template id="tpl-cert">
+    <div class="cert">
+      <div class="cover" title="Click to replace image" data-action="replace"><img alt="" loading="lazy" data-slot="image"></div>
+      <div class="body">
+        <input placeholder="Title (optional)" data-slot="title">
+        <button class="icon-btn" type="button" title="Move earlier" data-action="earlier"><ion-icon name="arrow-back"></ion-icon></button>
+        <button class="icon-btn danger" type="button" title="Delete" data-action="delete"><ion-icon name="trash-outline"></ion-icon></button>
+      </div>
+    </div>
+  </template>
+
+
+  <!-- ====================================================================
+       SCRIPTS
+       ==================================================================== -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="./admin.js"></script>
+
+</body>
+
+</html>
