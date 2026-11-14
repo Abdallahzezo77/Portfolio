@@ -349,17 +349,30 @@ const toBase64 = (blob) =>
     reader.readAsDataURL(blob);
   });
 
-/** Resize big photos and convert them to WebP so the site stays fast. */
-async function optimizeImage(file, maxWidth) {
+/**
+ * Resize big photos and convert them to WebP so the site stays fast.
+ * square = true crops the centre of the photo to a square (profile pictures).
+ */
+async function optimizeImage(file, maxWidth, square = false) {
   if (/svg|gif/.test(file.type)) {
     return { blob: file, ext: file.type.includes("svg") ? "svg" : "gif" };
   }
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, maxWidth / bitmap.width);
+
+  // part of the photo to keep: everything, or a centred square
+  let sx = 0, sy = 0, sw = bitmap.width, sh = bitmap.height;
+  if (square) {
+    const side = Math.min(bitmap.width, bitmap.height);
+    sx = (bitmap.width - side) / 2;
+    sy = Math.max(0, (bitmap.height - side) * 0.2); // portrait: stay near the top, where the face is
+    sw = sh = side;
+  }
+
+  const scale = Math.min(1, maxWidth / sw);
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  canvas.width = Math.round(sw * scale);
+  canvas.height = Math.round(sh * scale);
+  canvas.getContext("2d").drawImage(bitmap, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
 
   const webp = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", 0.85));
   if (webp && webp.type === "image/webp") return { blob: webp, ext: "webp" };
@@ -374,7 +387,7 @@ async function optimizeImage(file, maxWidth) {
  * Prepare a file for publishing and return its future path in the repo.
  * kind: "image" (optimized) or "file" (uploaded as-is, e.g. a PDF).
  */
-async function addUpload(file, { folder = "assets/images/uploads", name, maxWidth = 1600, kind = "image" } = {}) {
+async function addUpload(file, { folder = "assets/images/uploads", name, maxWidth = 1600, kind = "image", square = false } = {}) {
   if (!file) return null;
   if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
     setStatus(`That file is over ${MAX_UPLOAD_MB} MB. Pick a smaller one.`, "err");
@@ -388,7 +401,7 @@ async function addUpload(file, { folder = "assets/images/uploads", name, maxWidt
       setStatus("Please choose an image file (JPG, PNG, WebP, SVG).", "err");
       return null;
     }
-    ({ blob, ext } = await optimizeImage(file, maxWidth));
+    ({ blob, ext } = await optimizeImage(file, maxWidth, square));
   }
 
   const baseName = slugify(name || file.name.replace(/\.[^.]+$/, ""));
@@ -422,6 +435,7 @@ function setupPicker(picker, getTarget) {
     const path = await addUpload(file, {
       maxWidth: Number(picker.dataset.maxWidth) || 1600,
       name: picker.dataset.fileName,
+      square: "square" in picker.dataset,
     });
     if (!path) return;
     obj[key] = path;
