@@ -31,7 +31,7 @@ window.PORTFOLIO_CONTENT = {
       "url": "https://dribbble.com/abdallah-elsayed-ramadan"
     }
   ],
-  "about": "I'm a UI Developer with a passion for creating beautiful and user-friendly interfaces. I have extensive experience in UI & UX design. I enjoy turning ideas into amazing digital experiences that people love to use. Let's work together to create something great",
+  "about": "I'm a Senior UI/UX Designer with 7+ years of experience crafting intuitive, user-centered digital experiences. I specialize in transforming complex ideas into elegant, functional, and scalable solutions across web and mobile platforms. I’m passionate about solving problems through thoughtful design, creating seamless user journeys, and delivering digital products that make a real impact. Let’s work together to create something meaningful.",
   "services": [
     {
       "icon": "assets/images/icon-dev.svg",
