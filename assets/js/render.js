@@ -97,7 +97,7 @@
         const link = slot(item, "link");
         link.href = safeUrl(social.url);
         link.title = social.name || "";
-        link.setAttribute("aria-label", social.name || "Social link");
+        slot(item, "label").textContent = social.name || "Social link"; // read by screen readers
         slot(item, "icon").setAttribute("name", social.icon || "link-outline");
         return item;
       })
@@ -134,6 +134,7 @@
     certifications.map((cert) => {
       const item = cloneTemplate("tpl-certification");
       slot(item, "title").textContent = cert.title || "";
+      slot(item, "open").setAttribute("aria-label", `Open certificate${cert.title ? ": " + cert.title : ""}`);
       const image = slot(item, "image");
       image.src = safeUrl(cert.image);
       image.alt = cert.title || "Certificate";
@@ -234,6 +235,7 @@
     find("data-testimonial-list"),
     showSection("data-testimonials-section", "testimonials").map((entry) => {
       const item = cloneTemplate("tpl-testimonial");
+      item.querySelector("[data-testimonials-item]").setAttribute("aria-label", `Read testimonial from ${entry.name || "a client"}`);
       const avatar = slot(item, "avatar");
       if (entry.avatar) {
         avatar.src = safeUrl(entry.avatar);
@@ -287,6 +289,7 @@
       const item = cloneTemplate("tpl-filter");
       const button = slot(item, "name");
       button.textContent = name;
+      button.setAttribute("aria-pressed", String(index === 0));
       if (index === 0) button.classList.add("active");
       return item;
     })
@@ -314,6 +317,9 @@
       if (url) {
         link.target = "_blank";
         link.rel = "noopener";
+      } else {
+        slot(item, "new-tab").remove(); // no link: nothing opens
+        link.setAttribute("aria-disabled", "true");
       }
 
       const image = slot(item, "image");

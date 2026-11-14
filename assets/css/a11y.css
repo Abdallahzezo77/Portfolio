@@ -1,0 +1,503 @@
+/* ==========================================================================
+   a11y.css — accessibility (WCAG 2.2 AA)
+   --------------------------------------------------------------------------
+   1. Always-on fixes (focus, skip link, screen-reader text, targets, motion)
+   2. Accessibility panel (button + menu)
+   3. Settings chosen in the panel (classes / data-* set on <html> by a11y.js)
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. ALWAYS-ON FIXES
+   ========================================================================== */
+
+/* Text only for screen readers (visually hidden, still read aloud) */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* "Skip to main content" — appears when reached with the Tab key (WCAG 2.4.1) */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--orange-yellow-crayola);
+  color: #111;
+  font-weight: var(--fw-600);
+  transform: translateY(-200%);
+  transition: transform 0.2s;
+}
+
+.skip-link:focus { transform: translateY(0); }
+
+/* Clear keyboard focus everywhere (WCAG 2.4.7 / 2.4.11) */
+:focus-visible {
+  outline: 3px solid var(--orange-yellow-crayola) !important;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* main content and page titles receive focus programmatically: no ring needed */
+#main-content:focus,
+.article-title:focus { outline: none !important; }
+
+/* Bigger tap targets for small icon links (WCAG 2.5.8 — at least 24×24px) */
+.social-link {
+  display: inline-grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* Certificate cards are buttons for keyboard users */
+[data-testimonials-item] { cursor: pointer; }
+
+/* Respect "Reduce motion" in the operating system (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ==========================================================================
+   2. ACCESSIBILITY PANEL
+   ========================================================================== */
+
+.a11y-root {
+  --a11y-bg: hsl(240, 2%, 12%);
+  --a11y-tile: hsl(240, 2%, 16%);
+  --a11y-tile-hover: hsl(240, 2%, 20%);
+  --a11y-line: hsl(0, 0%, 26%);
+  --a11y-text: hsl(0, 0%, 96%);
+  --a11y-muted: hsl(0, 0%, 75%);
+  --a11y-accent: #feb824;
+  --a11y-accent-ink: #1a1400;
+  font-family: var(--ff-poppins);
+}
+
+/* show only the active language (English / Arabic) */
+.a11y-root[data-lang="en"] [lang="ar"],
+.a11y-root[data-lang="ar"] [lang="en"] { display: none; }
+
+/* ---------- floating button ---------- */
+.a11y-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 88px;              /* above the mobile bottom navbar */
+  z-index: 60;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--a11y-accent);
+  color: var(--a11y-accent-ink);
+  box-shadow: 0 10px 30px hsla(0, 0%, 0%, 0.45);
+  transition: transform 0.15s;
+}
+
+.a11y-fab ion-icon { font-size: 30px; }
+.a11y-fab:hover { transform: scale(1.06); }
+.a11y-fab:active { transform: scale(0.96); }
+
+@media (min-width: 1024px) {
+  .a11y-fab { bottom: 24px; right: 24px; }
+}
+
+/* ---------- panel ---------- */
+.a11y-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 156px;
+  z-index: 61;
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  background: var(--a11y-bg);
+  color: var(--a11y-text);
+  border: 1px solid var(--a11y-line);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px hsla(0, 0%, 0%, 0.55);
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.a11y-panel[hidden] { display: none; }
+
+@media (min-width: 1024px) {
+  .a11y-panel { bottom: 92px; right: 24px; max-height: calc(100vh - 120px); }
+}
+
+.a11y-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--a11y-line);
+}
+
+.a11y-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-end: auto;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--a11y-text);
+}
+
+.a11y-title ion-icon { font-size: 24px; color: var(--a11y-accent); }
+
+.a11y-lang select {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--a11y-line);
+  background: var(--a11y-tile);
+  color: var(--a11y-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.a11y-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--a11y-tile);
+  color: var(--a11y-text);
+}
+
+.a11y-close ion-icon { font-size: 20px; }
+.a11y-close:hover { background: var(--a11y-tile-hover); }
+
+.a11y-body {
+  padding: 14px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* "Enlarge this menu" switch */
+.a11y-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: var(--a11y-tile);
+  color: var(--a11y-accent);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.a11y-switch > span:first-child { margin-inline-end: auto; }
+.a11y-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+.a11y-switch-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--a11y-line);
+  transition: background 0.2s;
+}
+
+.a11y-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+.a11y-switch input:checked + .a11y-switch-track { background: var(--a11y-accent); }
+.a11y-switch input:checked + .a11y-switch-track::after { transform: translateX(20px); }
+[dir="rtl"] .a11y-switch input:checked + .a11y-switch-track::after { transform: translateX(-20px); }
+.a11y-switch input:focus-visible + .a11y-switch-track { outline: 3px solid var(--a11y-accent); outline-offset: 2px; }
+
+/* tiles */
+.a11y-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.a11y-tile {
+  min-height: 104px;
+  padding: 14px 8px 12px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: var(--a11y-tile);
+  color: var(--a11y-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  font: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.a11y-tile:hover { background: var(--a11y-tile-hover); }
+.a11y-tile ion-icon { font-size: 26px; color: var(--a11y-accent); }
+.a11y-glyph { font-size: 22px; font-weight: 600; line-height: 26px; color: var(--a11y-accent); }
+.a11y-tile-label { font-size: 13px; font-weight: 500; line-height: 1.3; }
+
+.a11y-tile[aria-pressed="true"] {
+  border-color: var(--a11y-accent);
+  background: hsla(41, 99%, 57%, 0.12);
+}
+
+.a11y-tile:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* level dots under multi-level tiles */
+.a11y-dots { display: flex; gap: 5px; }
+.a11y-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--a11y-line); }
+.a11y-dots i.on { background: var(--a11y-accent); }
+
+.a11y-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: hsla(41, 99%, 57%, 0.12);
+  color: var(--a11y-text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.a11y-note-warn { background: hsla(0, 60%, 50%, 0.18); }
+
+.a11y-foot {
+  padding: 12px 16px;
+  border-top: 1px solid var(--a11y-line);
+}
+
+.a11y-reset {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--a11y-accent);
+  color: var(--a11y-accent-ink);
+  font: inherit;
+  font-weight: 600;
+}
+
+.a11y-reset ion-icon { font-size: 20px; }
+
+/* "Enlarge this menu" */
+.a11y-panel.is-large { width: min(460px, calc(100vw - 32px)); font-size: 17px; }
+.a11y-panel.is-large .a11y-tile-label { font-size: 16px; }
+.a11y-panel.is-large .a11y-tile ion-icon { font-size: 32px; }
+.a11y-panel.is-large .a11y-tile { min-height: 124px; }
+
+/* floating hint ("Text hints") */
+.a11y-tooltip {
+  position: fixed;
+  z-index: 70;
+  max-width: 260px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  border: 1px solid var(--a11y-accent);
+  font: 500 14px/1.4 var(--ff-poppins);
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   3. SETTINGS (set on <html> by a11y.js)
+   Everything is scoped to the site (main / sidebar), never to the panel.
+   ========================================================================== */
+
+/* ---------- Contrast: 1 = dark high contrast, 2 = light high contrast ---------- */
+html[data-a11y-contrast="1"] {
+  --bg-gradient-onyx: #000;
+  --bg-gradient-jet: #000;
+  --bg-gradient-yellow-1: #000;
+  --bg-gradient-yellow-2: #000;
+  --border-gradient-onyx: #fff;
+  --text-gradient-yellow: #ffd400;
+  --jet: #fff;
+  --onyx: #000;
+  --eerie-black-1: #000;
+  --eerie-black-2: #000;
+  --smoky-black: #000;
+  --white-1: #fff;
+  --white-2: #fff;
+  --orange-yellow-crayola: #ffd400;
+  --vegas-gold: #ffd400;
+  --light-gray: #fff;
+  --light-gray-70: #fff;
+}
+
+html[data-a11y-contrast="2"] {
+  --bg-gradient-onyx: #fff;
+  --bg-gradient-jet: #fff;
+  --bg-gradient-yellow-1: #fff;
+  --bg-gradient-yellow-2: #fff;
+  --border-gradient-onyx: #000;
+  --text-gradient-yellow: #6b3e00;
+  --jet: #000;
+  --onyx: #fff;
+  --eerie-black-1: #fff;
+  --eerie-black-2: #fff;
+  --smoky-black: #fff;
+  --white-1: #000;
+  --white-2: #000;
+  --orange-yellow-crayola: #7a4500;
+  --vegas-gold: #7a4500;
+  --light-gray: #000;
+  --light-gray-70: #000;
+}
+
+html[data-a11y-contrast="2"] body { background: #fff; }
+html[data-a11y-contrast] #particles-js { opacity: 0.25; }
+html[data-a11y-contrast] :is(.sidebar, article, .navbar) { border: 2px solid var(--jet); box-shadow: none; }
+
+/* ---------- Saturation: 1 = low, 2 = high, 3 = black & white ---------- */
+html[data-a11y-saturation="1"] :is(.sidebar, article, .navbar, #particles-js) { filter: saturate(0.5); }
+html[data-a11y-saturation="2"] :is(.sidebar, article, .navbar, #particles-js) { filter: saturate(2); }
+html[data-a11y-saturation="3"] :is(.sidebar, article, .navbar, #particles-js) { filter: grayscale(1); }
+
+/* ---------- Text size (scales the site's own font-size tokens) ---------- */
+html[data-a11y-text-size="1"] { --a11y-scale: 1.15; }
+html[data-a11y-text-size="2"] { --a11y-scale: 1.3; }
+html[data-a11y-text-size="3"] { --a11y-scale: 1.5; }
+html[data-a11y-text-size="4"] { --a11y-scale: 1.75; }
+
+html[data-a11y-text-size] {
+  --fs-1: calc(24px * var(--a11y-scale));
+  --fs-2: calc(18px * var(--a11y-scale));
+  --fs-3: calc(17px * var(--a11y-scale));
+  --fs-4: calc(16px * var(--a11y-scale));
+  --fs-5: calc(15px * var(--a11y-scale));
+  --fs-6: calc(14px * var(--a11y-scale));
+  --fs-7: calc(13px * var(--a11y-scale));
+  --fs-8: calc(11px * var(--a11y-scale));
+}
+
+@media (min-width: 580px) {
+  html[data-a11y-text-size] {
+    --fs-1: calc(32px * var(--a11y-scale));
+    --fs-2: calc(24px * var(--a11y-scale));
+    --fs-3: calc(26px * var(--a11y-scale));
+    --fs-4: calc(18px * var(--a11y-scale));
+    --fs-6: calc(15px * var(--a11y-scale));
+    --fs-7: calc(15px * var(--a11y-scale));
+    --fs-8: calc(12px * var(--a11y-scale));
+  }
+}
+
+/* bigger or wider text must wrap, never be cut off (WCAG 1.4.4 / 1.4.12) */
+html[data-a11y-text-size] main,
+html[data-a11y-letter-spacing] main,
+html[data-a11y-word-spacing] main { overflow-wrap: anywhere; }
+
+html:is([data-a11y-text-size], [data-a11y-letter-spacing], [data-a11y-word-spacing]) main :is(h1, h2, h3, h4, h5, .info-content .name) {
+  white-space: normal !important;
+}
+
+/* ---------- Line height (WCAG 1.4.12 asks for at least 1.5) ---------- */
+html[data-a11y-line-height="1"] main * { line-height: 1.6 !important; }
+html[data-a11y-line-height="2"] main * { line-height: 1.9 !important; }
+html[data-a11y-line-height="3"] main * { line-height: 2.2 !important; }
+
+/* ---------- Letter spacing (WCAG 1.4.12 asks for at least 0.12em) ---------- */
+html[data-a11y-letter-spacing="1"] main * { letter-spacing: 0.06em !important; }
+html[data-a11y-letter-spacing="2"] main * { letter-spacing: 0.12em !important; }
+html[data-a11y-letter-spacing="3"] main * { letter-spacing: 0.2em !important; }
+
+/* ---------- Word spacing (WCAG 1.4.12 asks for at least 0.16em) ---------- */
+html[data-a11y-word-spacing="1"] main * { word-spacing: 0.16em !important; }
+html[data-a11y-word-spacing="2"] main * { word-spacing: 0.3em !important; }
+html[data-a11y-word-spacing="3"] main * { word-spacing: 0.5em !important; }
+
+/* ---------- Text align: 1 = left, 2 = centre, 3 = right ---------- */
+html[data-a11y-text-align="1"] main :is(p, h1, h2, h3, h4, h5, li, address, span, a, time) { text-align: left !important; }
+html[data-a11y-text-align="2"] main :is(p, h1, h2, h3, h4, h5, li, address, span, a, time) { text-align: center !important; }
+html[data-a11y-text-align="3"] main :is(p, h1, h2, h3, h4, h5, li, address, span, a, time) { text-align: right !important; }
+
+/* ---------- Highlight links ---------- */
+html.a11y-links main :is(a, button):not(.a11y-tile) {
+  text-decoration: underline !important;
+  text-underline-offset: 4px;
+  outline: 2px dashed #ffd400 !important;
+  outline-offset: 2px;
+}
+
+/* ---------- Highlight headings ---------- */
+html.a11y-headings main :is(h1, h2, h3, h4, h5, h6) {
+  outline: 2px solid #ffd400 !important;
+  outline-offset: 4px;
+  background: hsla(51, 100%, 50%, 0.15) !important;
+  border-radius: 4px;
+}
+
+/* ---------- Hide images (and the moving background) ---------- */
+html.a11y-hide-images main img,
+html.a11y-hide-images main figure,
+html.a11y-hide-images #particles-js { visibility: hidden !important; }
+html.a11y-hide-images main * { background-image: none !important; }
+
+/* ---------- Pause animations ---------- */
+html.a11y-pause *,
+html.a11y-pause *::before,
+html.a11y-pause *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---------- Big cursor ---------- */
+html.a11y-cursor,
+html.a11y-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M6 3l30 21-13 2 8 15-6 3-8-15-11 9z' fill='%23000' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E") 6 3, auto !important;
+}
+
+/* ---------- Readable font (helps people with dyslexia / low vision) ---------- */
+html.a11y-font main,
+html.a11y-font main * {
+  font-family: "Atkinson Hyperlegible", Verdana, sans-serif !important;
+}
+
+/* ---------- Read aloud: show what can be read, and what is being read ---------- */
+html.a11y-tts main :is(p, h1, h2, h3, h4, h5, li, address, a, button, time):hover {
+  outline: 2px dotted #ffd400;
+  outline-offset: 2px;
+}
+
+.a11y-reading {
+  outline: 3px solid #ffd400 !important;
+  outline-offset: 3px;
+  background: hsla(51, 100%, 50%, 0.18) !important;
+}

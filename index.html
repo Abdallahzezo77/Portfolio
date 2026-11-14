@@ -36,14 +36,23 @@
     integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Site styles -->
-  <link rel="stylesheet" href="./assets/css/style.css?v=3">
+  <!-- Readable font used by the accessibility panel ("Readable font") -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+
+  <!-- Site styles + accessibility styles -->
+  <link rel="stylesheet" href="./assets/css/style.css?v=4">
+  <link rel="stylesheet" href="./assets/css/a11y.css?v=4">
 </head>
 
 <body>
 
-  <!-- Animated background (particles.js) -->
-  <div id="particles-js"></div>
+  <!-- Keyboard users: jump past the sidebar straight to the content -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- Animated background (particles.js) — decorative -->
+  <div id="particles-js" aria-hidden="true"></div>
 
   <main>
 
@@ -51,7 +60,7 @@
          SIDEBAR — photo, name, contacts and social links
          All values come from data/content.js (edit them in /admin)
          ================================================================ -->
-    <aside class="sidebar" data-sidebar>
+    <aside class="sidebar" data-sidebar aria-label="About Abdallah">
 
       <div class="sidebar-info">
         <figure class="avatar-box">
@@ -64,30 +73,30 @@
         </div>
 
         <!-- Mobile only: expands the contacts panel -->
-        <button class="info_more-btn" data-sidebar-btn>
+        <button class="info_more-btn" data-sidebar-btn aria-expanded="false" aria-controls="sidebar-contacts">
           <span>Show Contacts</span>
-          <ion-icon name="chevron-down"></ion-icon>
+          <ion-icon aria-hidden="true" name="chevron-down"></ion-icon>
         </button>
       </div>
 
-      <div class="sidebar-info_more">
+      <div class="sidebar-info_more" id="sidebar-contacts">
         <div class="separator"></div>
-        <ul class="contacts-list" data-contacts-list></ul>
+        <ul class="contacts-list" data-contacts-list aria-label="Contact details"></ul>
         <div class="separator"></div>
-        <ul class="social-list" data-social-list></ul>
+        <ul class="social-list" data-social-list aria-label="Social profiles"></ul>
       </div>
 
     </aside>
 
 
-    <div class="main-content">
+    <div class="main-content" id="main-content" tabindex="-1">
 
       <!-- ================================================================
            NAVBAR — switches between the four pages below
            ================================================================ -->
-      <nav class="navbar">
+      <nav class="navbar" aria-label="Pages">
         <ul class="navbar-list">
-          <li class="navbar-item"><button class="navbar-link active" data-nav-link>About</button></li>
+          <li class="navbar-item"><button class="navbar-link active" data-nav-link aria-current="page">About</button></li>
           <li class="navbar-item"><button class="navbar-link" data-nav-link>Resume</button></li>
           <li class="navbar-item"><button class="navbar-link" data-nav-link>Portfolio</button></li>
           <li class="navbar-item"><button class="navbar-link" data-nav-link>Contact</button></li>
@@ -101,7 +110,7 @@
       <article class="about active" data-page="about">
 
         <header>
-          <h2 class="h2 article-title">About me</h2>
+          <h2 class="h2 article-title" tabindex="-1">About me</h2>
         </header>
 
         <!-- About text -->
@@ -130,9 +139,9 @@
         <!-- Certification modal -->
         <div class="modal-container" data-modal-container>
           <div class="overlay" data-overlay></div>
-          <section class="testimonials-modal">
-            <button class="modal-close-btn" data-modal-close-btn>
-              <ion-icon name="close-outline"></ion-icon>
+          <section class="testimonials-modal" role="dialog" aria-modal="true" aria-label="Certificate">
+            <button class="modal-close-btn" data-modal-close-btn aria-label="Close">
+              <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
             </button>
             <div class="modal-content">
               <div data-modal-text></div>
@@ -149,7 +158,7 @@
               </div>
               <div class="facts-content-box">
                 <h5 class="h5 facts-item-title">
-                  <a href="#" target="_blank" download data-cv-link>Download My Resume</a>
+                  <a href="#" target="_blank" download data-cv-link>Download My Resume <span class="sr-only">(PDF)</span></a>
                 </h5>
               </div>
             </li>
@@ -165,13 +174,13 @@
       <article class="resume" data-page="resume">
 
         <header>
-          <h2 class="h2 article-title">Resume</h2>
+          <h2 class="h2 article-title" tabindex="-1">Resume</h2>
         </header>
 
         <!-- Education -->
         <section class="timeline">
           <div class="title-wrapper">
-            <div class="icon-box"><ion-icon name="book-outline"></ion-icon></div>
+            <div class="icon-box"><ion-icon aria-hidden="true" name="book-outline"></ion-icon></div>
             <h3 class="h3">Education</h3>
           </div>
           <ol class="timeline-list" data-education-list></ol>
@@ -180,7 +189,7 @@
         <!-- Experience -->
         <section class="timeline">
           <div class="title-wrapper">
-            <div class="icon-box"><ion-icon name="diamond-outline"></ion-icon></div>
+            <div class="icon-box"><ion-icon aria-hidden="true" name="diamond-outline"></ion-icon></div>
             <h3 class="h3">Experience</h3>
           </div>
           <ol class="timeline-list" data-experience-list></ol>
@@ -189,7 +198,7 @@
         <!-- Awards (hidden until switched on in the dashboard) -->
         <section class="timeline" data-awards-section hidden>
           <div class="title-wrapper">
-            <div class="icon-box"><ion-icon name="trophy-outline"></ion-icon></div>
+            <div class="icon-box"><ion-icon aria-hidden="true" name="trophy-outline"></ion-icon></div>
             <h3 class="h3">Awards</h3>
           </div>
           <ol class="timeline-list" data-award-list></ol>
@@ -198,7 +207,7 @@
         <!-- Articles (hidden until switched on in the dashboard) -->
         <section class="timeline" data-articles-section hidden>
           <div class="title-wrapper">
-            <div class="icon-box"><ion-icon name="newspaper-outline"></ion-icon></div>
+            <div class="icon-box"><ion-icon aria-hidden="true" name="newspaper-outline"></ion-icon></div>
             <h3 class="h3">Articles</h3>
           </div>
           <ol class="timeline-list" data-article-list></ol>
@@ -219,25 +228,28 @@
       <article class="portfolio" data-page="portfolio">
 
         <header>
-          <h2 class="h2 article-title">Portfolio</h2>
+          <h2 class="h2 article-title" tabindex="-1">Portfolio</h2>
         </header>
 
         <section class="projects">
 
           <!-- Category buttons (desktop) -->
-          <ul class="filter-list" data-filter-list></ul>
+          <ul class="filter-list" data-filter-list aria-label="Filter projects by category"></ul>
 
           <!-- Category dropdown (mobile) -->
           <div class="filter-select-box">
-            <button class="filter-select" data-select>
+            <button class="filter-select" data-select aria-expanded="false" aria-label="Choose a project category">
               <div class="select-value" data-selecct-value>Select category</div>
-              <div class="select-icon"><ion-icon name="chevron-down"></ion-icon></div>
+              <div class="select-icon"><ion-icon aria-hidden="true" name="chevron-down"></ion-icon></div>
             </button>
             <ul class="select-list" data-select-list></ul>
           </div>
 
+          <!-- Announces the result of a filter to screen readers -->
+          <p class="sr-only" role="status" aria-live="polite" data-filter-status></p>
+
           <!-- Projects -->
-          <ul class="project-list" data-project-list></ul>
+          <ul class="project-list" data-project-list aria-label="Projects"></ul>
 
         </section>
 
@@ -250,12 +262,12 @@
       <article class="contact" data-page="contact">
 
         <header>
-          <h2 class="h2 article-title">Contact</h2>
+          <h2 class="h2 article-title" tabindex="-1">Contact</h2>
         </header>
 
         <section class="mapbox" data-mapbox>
           <figure>
-            <iframe title="Map"
+            <iframe title="Map of Cairo, Egypt"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110502.76973610223!2d31.188423958778234!3d30.05946989057207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583fa60b21beeb%3A0x79dfb296e8423bba!2sCairo%2C%20Cairo%20Governorate!5e0!3m2!1sen!2seg!4v1658601508049!5m2!1sen!2seg"
               width="600" height="300" loading="lazy"></iframe>
           </figure>
@@ -266,20 +278,26 @@
 
           <form action="#" class="form" data-form>
             <div class="input-wrapper">
+              <label class="sr-only" for="C_name">Full name</label>
               <input type="text" name="fullname" class="form-input" placeholder="Full name" required data-form-input
-                id="C_name" autocomplete="off">
+                id="C_name" autocomplete="name">
+              <label class="sr-only" for="C_mail">Email address</label>
               <input type="email" name="email" class="form-input" placeholder="Email address" required
-                data-form-input id="C_mail" autocomplete="off">
+                data-form-input id="C_mail" autocomplete="email">
             </div>
 
+            <label class="sr-only" for="C_message">Your message</label>
             <textarea name="message" class="form-input" placeholder="Your Message" required data-form-input
               id="C_message"></textarea>
 
             <button class="form-btn" type="submit" disabled data-form-btn>
-              <ion-icon name="paper-plane"></ion-icon>
+              <ion-icon aria-hidden="true" name="paper-plane"></ion-icon>
               <span>Send Message</span>
             </button>
           </form>
+
+          <!-- Screen readers hear the result of sending -->
+          <p class="sr-only" role="status" aria-live="polite" data-form-status></p>
         </section>
 
       </article>
@@ -287,6 +305,166 @@
     </div>
 
   </main>
+
+
+  <!-- ==================================================================
+       ACCESSIBILITY PANEL
+       Settings for people with low vision, colour blindness, dyslexia,
+       motion sensitivity, motor and hearing/speech needs.
+       Logic: assets/js/a11y.js · Styles: assets/css/a11y.css
+       ================================================================== -->
+  <div class="a11y-root" data-a11y-root data-lang="en">
+
+    <button class="a11y-fab" type="button" aria-expanded="false" aria-controls="a11y-panel" data-a11y-open>
+      <ion-icon name="accessibility-outline" aria-hidden="true"></ion-icon>
+      <span class="sr-only"><span lang="en">Accessibility options</span><span lang="ar">خيارات الوصول</span></span>
+    </button>
+
+    <div class="a11y-panel" id="a11y-panel" role="dialog" aria-labelledby="a11y-title" lang="en" dir="ltr" hidden>
+
+      <header class="a11y-head">
+        <h2 class="a11y-title" id="a11y-title">
+          <ion-icon name="accessibility-outline" aria-hidden="true"></ion-icon>
+          <span lang="en">Accessibility</span><span lang="ar">وصول</span>
+        </h2>
+        <label class="a11y-lang">
+          <span class="sr-only"><span lang="en">Language</span><span lang="ar">اللغة</span></span>
+          <select data-a11y-lang>
+            <option value="en">English</option>
+            <option value="ar" lang="ar">العربية</option>
+          </select>
+        </label>
+        <button class="a11y-close" type="button" data-a11y-close>
+          <ion-icon name="close" aria-hidden="true"></ion-icon>
+          <span class="sr-only"><span lang="en">Close</span><span lang="ar">إغلاق</span></span>
+        </button>
+      </header>
+
+      <div class="a11y-body">
+
+        <label class="a11y-switch">
+          <span><span lang="en">Enlarge this menu</span><span lang="ar">تكبير هذه القائمة</span></span>
+          <input type="checkbox" role="switch" data-a11y-enlarge>
+          <span class="a11y-switch-track" aria-hidden="true"></span>
+        </label>
+
+        <div class="a11y-grid">
+            <button class="a11y-tile" type="button" data-a11y-setting="contrast" data-levels="2" aria-pressed="false">
+              <ion-icon name="contrast-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Contrast</span><span lang="ar">التباين</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="saturation" data-levels="3" aria-pressed="false">
+              <ion-icon name="water-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Saturation</span><span lang="ar">تشبّع الألوان</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="text-size" data-levels="4" aria-pressed="false">
+              <ion-icon name="text-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Text size</span><span lang="ar">حجم النص</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="line-height" data-levels="3" aria-pressed="false">
+              <ion-icon name="reorder-four-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Line height</span><span lang="ar">تباعد الأسطر</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="letter-spacing" data-levels="3" aria-pressed="false">
+              <ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Letter spacing</span><span lang="ar">تباعد الحروف</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="word-spacing" data-levels="3" aria-pressed="false">
+              <ion-icon name="resize-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Word spacing</span><span lang="ar">تباعد الكلمات</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="text-align" data-levels="3" aria-pressed="false">
+              <ion-icon name="menu-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Text align</span><span lang="ar">محاذاة النص</span></span>
+              <span class="a11y-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="links" data-levels="1" aria-pressed="false">
+              <ion-icon name="link-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Highlight links</span><span lang="ar">تمييز الروابط</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="headings" data-levels="1" aria-pressed="false">
+              <span class="a11y-glyph" aria-hidden="true">H1</span>
+              <span class="a11y-tile-label"><span lang="en">Highlight headings</span><span lang="ar">تمييز العناوين</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="hide-images" data-levels="1" aria-pressed="false">
+              <ion-icon name="eye-off-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Hide images</span><span lang="ar">إخفاء الصور</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="pause" data-levels="1" aria-pressed="false">
+              <ion-icon name="pause-circle-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Pause animations</span><span lang="ar">إيقاف الحركة</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="cursor" data-levels="1" aria-pressed="false">
+              <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Big cursor</span><span lang="ar">مؤشر كبير</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="font" data-levels="1" aria-pressed="false">
+              <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Readable font</span><span lang="ar">خط سهل القراءة</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="tts" data-levels="1" aria-pressed="false">
+              <ion-icon name="volume-high-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Read aloud</span><span lang="ar">النص إلى صوت</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="voice" data-levels="1" aria-pressed="false">
+              <ion-icon name="mic-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Voice commands</span><span lang="ar">الأوامر الصوتية</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+            <button class="a11y-tile" type="button" data-a11y-setting="tooltips" data-levels="1" aria-pressed="false">
+              <ion-icon name="chatbox-ellipses-outline" aria-hidden="true"></ion-icon>
+              <span class="a11y-tile-label"><span lang="en">Text hints</span><span lang="ar">تلميحات النص</span></span>
+              <span class="sr-only" data-a11y-state></span>
+            </button>
+        </div>
+
+        <!-- shown while voice commands are listening -->
+        <p class="a11y-note" role="status" aria-live="polite" data-a11y-voice-status hidden>
+          <span lang="en">Listening… say “About”, “Resume”, “Portfolio”, “Contact”, “Scroll down”, “Scroll up”, “Top” or “Stop”.</span>
+          <span lang="ar">أستمع… قل «نبذة» أو «السيرة» أو «الأعمال» أو «تواصل» أو «انزل» أو «اطلع» أو «البداية» أو «توقف».</span>
+        </p>
+
+        <!-- shown when this browser can't do speech -->
+        <p class="a11y-note a11y-note-warn" role="status" data-a11y-unsupported hidden>
+          <span lang="en">Your browser doesn't support this feature. Try Chrome, Edge or Safari.</span>
+          <span lang="ar">متصفحك لا يدعم هذه الميزة. جرّب Chrome أو Edge أو Safari.</span>
+        </p>
+
+      </div>
+
+      <footer class="a11y-foot">
+        <button class="a11y-reset" type="button" data-a11y-reset>
+          <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+          <span lang="en">Reset settings</span><span lang="ar">إعادة تعيين الإعدادات</span>
+        </button>
+      </footer>
+
+    </div>
+
+    <!-- floating hint used by "Text hints" -->
+    <div class="a11y-tooltip" role="tooltip" id="a11y-tooltip" hidden></div>
+
+  </div>
 
 
   <!-- ==================================================================
@@ -298,7 +476,7 @@
   <!-- Contact row with a link (email, phone) -->
   <template id="tpl-contact-link">
     <li class="contact-item">
-      <div class="icon-box"><ion-icon data-slot="icon"></ion-icon></div>
+      <div class="icon-box"><ion-icon aria-hidden="true" data-slot="icon"></ion-icon></div>
       <div class="contact-info">
         <p class="contact-title" data-slot="label"></p>
         <a class="contact-link" data-slot="value"></a>
@@ -309,7 +487,7 @@
   <!-- Contact row without a link (location) -->
   <template id="tpl-contact-address">
     <li class="contact-item">
-      <div class="icon-box"><ion-icon data-slot="icon"></ion-icon></div>
+      <div class="icon-box"><ion-icon aria-hidden="true" data-slot="icon"></ion-icon></div>
       <div class="contact-info">
         <p class="contact-title" data-slot="label"></p>
         <address data-slot="value"></address>
@@ -321,7 +499,8 @@
   <template id="tpl-social">
     <li class="social-item">
       <a class="social-link" target="_blank" rel="noopener" data-slot="link">
-        <ion-icon data-slot="icon"></ion-icon>
+        <ion-icon aria-hidden="true" data-slot="icon"></ion-icon>
+        <span class="sr-only"><span data-slot="label"></span> (opens in a new tab)</span>
       </a>
     </li>
   </template>
@@ -342,7 +521,7 @@
   <!-- Certification card -->
   <template id="tpl-certification">
     <li class="testimonials-item">
-      <div class="content-card" data-testimonials-item>
+      <div class="content-card" data-testimonials-item role="button" tabindex="0" aria-haspopup="dialog" data-slot="open">
         <figure class="testimonials-avatar-box"></figure>
         <h4 class="h4 testimonials-item-title" data-slot="title"></h4>
         <div class="testimonials-text" data-testimonials-text>
@@ -355,7 +534,7 @@
   <!-- Testimonial card -->
   <template id="tpl-testimonial">
     <li class="testimonials-item">
-      <div class="content-card" data-testimonials-item>
+      <div class="content-card" data-testimonials-item role="button" tabindex="0" aria-haspopup="dialog">
         <figure class="testimonials-avatar-box">
           <img width="60" alt="" data-slot="avatar">
         </figure>
@@ -437,11 +616,12 @@
     <li class="project-item active" data-filter-item>
       <a data-slot="link">
         <figure class="project-img">
-          <div class="project-item-icon-box"><ion-icon name="eye-outline"></ion-icon></div>
+          <div class="project-item-icon-box"><ion-icon aria-hidden="true" name="eye-outline"></ion-icon></div>
           <img alt="" loading="lazy" data-slot="image">
         </figure>
         <h3 class="project-title" data-slot="title"></h3>
         <p class="project-category" data-slot="category"></p>
+        <span class="sr-only" data-slot="new-tab">(opens in a new tab)</span>
       </a>
     </li>
   </template>
@@ -463,8 +643,9 @@
 
   <!-- 1. Content (edited from the dashboard)  2. Builds the page  3. Interactions -->
   <script src="./data/content.js"></script>
-  <script src="./assets/js/render.js?v=3"></script>
-  <script src="./assets/js/script.js?v=3"></script>
+  <script src="./assets/js/render.js?v=4"></script>
+  <script src="./assets/js/script.js?v=4"></script>
+  <script src="./assets/js/a11y.js?v=4"></script>
 
 </body>
 

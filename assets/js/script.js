@@ -21,6 +21,8 @@ const sidebarBtn = document.querySelector("[data-sidebar-btn]");
 
 sidebarBtn.addEventListener("click", function () {
   elementToggleFunc(sidebar);
+  // tell screen readers whether the contacts are shown
+  sidebarBtn.setAttribute("aria-expanded", String(sidebar.classList.contains("active")));
 });
 
 
@@ -33,22 +35,64 @@ const modalCloseBtn = document.querySelector("[data-modal-close-btn]");
 const overlay = document.querySelector("[data-overlay]");
 const modalText = document.querySelector("[data-modal-text]");
 
+let modalOpener = null; // element to return focus to when the modal closes
+
+/**
+ * Focus an element as soon as it can take focus.
+ * (The modal fades in with a CSS transition; until it is visible the
+ * browser refuses focus, so we retry on the next frames.)
+ */
+const focusWhenVisible = function (element, framesLeft = 60) {
+  element.focus();
+  if (document.activeElement !== element && framesLeft > 0) {
+    requestAnimationFrame(() => focusWhenVisible(element, framesLeft - 1));
+  }
+};
+
 const testimonialsModalFunc = function () {
   modalContainer.classList.toggle("active");
   overlay.classList.toggle("active");
+
+  if (modalContainer.classList.contains("active")) {
+    focusWhenVisible(modalCloseBtn); // keyboard / screen-reader users land inside the modal
+  } else if (modalOpener) {
+    modalOpener.focus(); // ...and go back to the card they opened
+  }
+};
+
+/** Open the modal with the content of a certificate / testimonial card. */
+const openCardModal = function (card) {
+  modalOpener = card;
+  const content = card.querySelector("[data-testimonials-text]");
+  modalText.replaceChildren(...Array.from(content.childNodes, (node) => node.cloneNode(true)));
+  testimonialsModalFunc();
 };
 
 for (let i = 0; i < testimonialsItem.length; i++) {
   testimonialsItem[i].addEventListener("click", function () {
-    // copy the certificate image into the modal
-    const content = this.querySelector("[data-testimonials-text]");
-    modalText.replaceChildren(...Array.from(content.childNodes, (node) => node.cloneNode(true)));
-    testimonialsModalFunc();
+    openCardModal(this);
+  });
+  // the cards act as buttons: Enter or Space opens them
+  testimonialsItem[i].addEventListener("keydown", function (event) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openCardModal(this);
+    }
   });
 }
 
 modalCloseBtn.addEventListener("click", testimonialsModalFunc);
 overlay.addEventListener("click", testimonialsModalFunc);
+
+// while the modal is open: Escape closes it, Tab stays inside it
+document.addEventListener("keydown", function (event) {
+  if (!modalContainer.classList.contains("active")) return;
+  if (event.key === "Escape") testimonialsModalFunc();
+  if (event.key === "Tab") {
+    event.preventDefault();
+    modalCloseBtn.focus(); // the close button is the only control inside
+  }
+});
 
 
 /* ---------------------------------------------------------------------------
@@ -60,17 +104,29 @@ const selectValue = document.querySelector("[data-selecct-value]");
 const filterBtn = document.querySelectorAll("[data-filter-btn]");
 const filterItems = document.querySelectorAll("[data-filter-item]");
 
+const filterStatus = document.querySelector("[data-filter-status]");
+
 /** Show the projects of one category ("all" shows everything). */
 const filterFunc = function (selectedValue) {
+  let shown = 0;
   for (let i = 0; i < filterItems.length; i++) {
     const matches = selectedValue === "all" || selectedValue === filterItems[i].dataset.category;
     filterItems[i].classList.toggle("active", matches);
+    if (matches) shown++;
+  }
+  // screen readers announce the result
+  filterStatus.textContent = `Showing ${shown} project${shown === 1 ? "" : "s"}.`;
+
+  // keep the desktop buttons in sync (pressed state)
+  for (let i = 0; i < filterBtn.length; i++) {
+    filterBtn[i].setAttribute("aria-pressed", String(filterBtn[i].textContent.trim().toLowerCase() === selectedValue));
   }
 };
 
 // mobile dropdown
 select.addEventListener("click", function () {
   elementToggleFunc(this);
+  select.setAttribute("aria-expanded", String(select.classList.contains("active")));
 });
 
 for (let i = 0; i < selectItems.length; i++) {
@@ -78,6 +134,8 @@ for (let i = 0; i < selectItems.length; i++) {
     const selectedValue = this.textContent.trim().toLowerCase();
     selectValue.textContent = this.textContent;
     elementToggleFunc(select);
+    select.setAttribute("aria-expanded", "false");
+    select.focus();
     filterFunc(selectedValue);
   });
 }
@@ -108,6 +166,7 @@ const formBtn = document.querySelector("[data-form-btn]");
 const cName = document.getElementById("C_name");
 const cMail = document.getElementById("C_mail");
 const CMessage = document.getElementById("C_message");
+const formStatus = document.querySelector("[data-form-status]");
 
 for (let i = 0; i < formInputs.length; i++) {
   formInputs[i].addEventListener("input", function () {
@@ -134,11 +193,14 @@ function sendEmail() {
     Body: bodyMessage,
   }).then((message) => {
     if (message == "OK") {
+      formStatus.textContent = "Your message was sent successfully.";
       Swal.fire({
         title: "Success!",
         text: "Message Sent Successfully ",
         icon: "success",
       });
+    } else {
+      formStatus.textContent = "Sorry, your message could not be sent. Please email me directly.";
     }
   });
 }
@@ -164,6 +226,12 @@ for (let i = 0; i < navigationLinks.length; i++) {
       const isTarget = pages[j].dataset.page === target;
       pages[j].classList.toggle("active", isTarget);
       navigationLinks[j].classList.toggle("active", isTarget);
+      // tell screen readers which page is open
+      if (isTarget) navigationLinks[j].setAttribute("aria-current", "page");
+      else navigationLinks[j].removeAttribute("aria-current");
+
+      // move focus to the new page title so keyboard / screen-reader users start there
+      if (isTarget) pages[j].querySelector(".article-title").focus({ preventScroll: true });
     }
     window.scrollTo(0, 0);
   });

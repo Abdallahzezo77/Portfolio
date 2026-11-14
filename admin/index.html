@@ -709,18 +709,20 @@
             <input type="number" data-field="start.year" placeholder="Year" min="1950" max="2100" aria-label="Start year">
           </div>
         </div>
-        <div class="field" data-end-date>
-          <span>End date</span>
-          <div class="date-pair">
-            <select data-field="end.month" data-months aria-label="End month"></select>
-            <input type="number" data-field="end.year" placeholder="Year" min="1950" max="2100" aria-label="End year">
+        <div class="date-end">
+          <div class="field" data-end-date>
+            <span>End date</span>
+            <div class="date-pair">
+              <select data-field="end.month" data-months aria-label="End month"></select>
+              <input type="number" data-field="end.year" placeholder="Year" min="1950" max="2100" aria-label="End year">
+            </div>
           </div>
+          <label class="check present-check">
+            <input type="checkbox" data-field="present">
+            I'm still studying here (Present)
+          </label>
         </div>
       </div>
-      <label class="check check-tight present-check">
-        <input type="checkbox" data-field="present">
-        I'm still studying here (Present)
-      </label>
       <label class="field"><span>Degree &amp; details</span><textarea rows="3" data-field="text"></textarea></label>
     </div>
   </template>
@@ -740,18 +742,20 @@
             <input type="number" data-field="start.year" placeholder="Year" min="1950" max="2100" aria-label="Start year">
           </div>
         </div>
-        <div class="field" data-end-date>
-          <span>End date</span>
-          <div class="date-pair">
-            <select data-field="end.month" data-months aria-label="End month"></select>
-            <input type="number" data-field="end.year" placeholder="Year" min="1950" max="2100" aria-label="End year">
+        <div class="date-end">
+          <div class="field" data-end-date>
+            <span>End date</span>
+            <div class="date-pair">
+              <select data-field="end.month" data-months aria-label="End month"></select>
+              <input type="number" data-field="end.year" placeholder="Year" min="1950" max="2100" aria-label="End year">
+            </div>
           </div>
+          <label class="check present-check">
+            <input type="checkbox" data-field="present">
+            I currently work here (Present)
+          </label>
         </div>
       </div>
-      <label class="check check-tight present-check">
-        <input type="checkbox" data-field="present">
-        I currently work here (Present)
-      </label>
       <label class="field">
         <span>Responsibilities &amp; achievements</span>
         <textarea rows="4" data-field="text" placeholder="One per line, e.g. Led the redesign of the mobile app"></textarea>
