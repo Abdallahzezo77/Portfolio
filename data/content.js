@@ -2,12 +2,12 @@
 window.PORTFOLIO_CONTENT = {
   "profile": {
     "name": "Abdallah Elsayed",
-    "title": "Sr. UI&UX Designer",
+    "title": "Sr. UI&UX Designer - Senior Product Designer ",
     "avatar": "assets/images/Abdallah.png",
     "email": "Abdallah.Elsayed.Ramadan@gmail.com",
     "phone": "+201157994980",
     "location": "Cairo, Egypt",
-    "cv": "assets/cv/Abdallah Elsayed Ramadan CV.pdf"
+    "cv": "assets/cv/abdallah-elsayed-cv-mwgvpafm.pdf"
   },
   "socials": [
     {
