@@ -75,45 +75,116 @@ window.PORTFOLIO_CONTENT = {
   "education": [
     {
       "title": "Alsun Higher Institute",
-      "period": "2015 — 2019",
-      "text": "Holds a Bachelor's degree in Management Information Systems,\nvery Good Degree."
+      "text": "Holds a Bachelor's degree in Management Information Systems,\nvery Good Degree.",
+      "start": {
+        "month": "",
+        "year": "2015"
+      },
+      "end": {
+        "month": "",
+        "year": "2019"
+      },
+      "present": false
     }
   ],
   "experience": [
     {
-      "title": "Sr. UI/UX Designer ",
-      "period": "2026 - Present ",
-      "text": "LamdaX"
+      "title": "Sr. UI/UX Designer",
+      "company": "LamdaX",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2026"
+      },
+      "end": {
+        "month": "",
+        "year": ""
+      },
+      "present": true
     },
     {
-      "title": "Sr. UI/UX Designer ",
-      "period": "2024-2026",
-      "text": "W88 Information Technology "
+      "title": "Sr. UI/UX Designer",
+      "company": "W88 Information Technology",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2024"
+      },
+      "end": {
+        "month": "",
+        "year": "2026"
+      },
+      "present": false
     },
     {
-      "title": "UI/UX Designer ",
-      "period": "2023-2024",
-      "text": "MSG Technology "
+      "title": "UI/UX Designer",
+      "company": "MSG Technology",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2023"
+      },
+      "end": {
+        "month": "",
+        "year": "2024"
+      },
+      "present": false
     },
     {
       "title": "Ui Developer",
-      "period": "2022 — 2023",
-      "text": "Practical Solutions Agency"
+      "company": "Practical Solutions Agency",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2022"
+      },
+      "end": {
+        "month": "",
+        "year": "2023"
+      },
+      "present": false
     },
     {
       "title": "Ui Developer",
-      "period": "2021 — 2022",
-      "text": "IT Share"
+      "company": "IT Share",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2021"
+      },
+      "end": {
+        "month": "",
+        "year": "2022"
+      },
+      "present": false
     },
     {
       "title": "Ui Designer",
-      "period": "2020 — 2021",
-      "text": "True Vision Agency"
+      "company": "True Vision Agency",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2020"
+      },
+      "end": {
+        "month": "",
+        "year": "2021"
+      },
+      "present": false
     },
     {
       "title": "Account Manager",
-      "period": "2017 — 2019",
-      "text": "VADS Marketing Agency"
+      "company": "VADS Marketing Agency",
+      "text": "",
+      "start": {
+        "month": "",
+        "year": "2017"
+      },
+      "end": {
+        "month": "",
+        "year": "2019"
+      },
+      "present": false
     }
   ],
   "skills": [
@@ -446,5 +517,13 @@ window.PORTFOLIO_CONTENT = {
       "image": "assets/images/Wordpress/TagMahal.webp",
       "link": "https://dev-tagmahal.pantheonsite.io/"
     }
-  ]
+  ],
+  "testimonials": [],
+  "awards": [],
+  "articles": [],
+  "sections": {
+    "testimonials": false,
+    "awards": false,
+    "articles": false
+  }
 };

@@ -127,6 +127,23 @@
         <ion-icon name="bar-chart-outline"></ion-icon><span class="nav-label">Skills</span>
       </button>
 
+      <p class="nav-group">Extra sections</p>
+      <button class="nav" type="button" data-view="testimonials">
+        <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-label">Testimonials</span>
+        <span class="count" data-count="testimonials"></span>
+        <span class="pill" data-section-pill="testimonials">Off</span>
+      </button>
+      <button class="nav" type="button" data-view="awards">
+        <ion-icon name="trophy-outline"></ion-icon><span class="nav-label">Awards</span>
+        <span class="count" data-count="awards"></span>
+        <span class="pill" data-section-pill="awards">Off</span>
+      </button>
+      <button class="nav" type="button" data-view="articles">
+        <ion-icon name="newspaper-outline"></ion-icon><span class="nav-label">Articles</span>
+        <span class="count" data-count="articles"></span>
+        <span class="pill" data-section-pill="articles">Off</span>
+      </button>
+
       <div class="side-foot">
         <a class="nav" id="site-link" href="../" target="_blank" rel="noopener">
           <ion-icon name="open-outline"></ion-icon>View live site
@@ -341,6 +358,65 @@
           </div>
         </section>
 
+
+        <!-- ======== Testimonials (extra section) ======== -->
+        <section class="panel" data-panel="testimonials" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Testimonials</h3>
+                <p>Quotes from clients and colleagues. Shown on your About page.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" data-section-toggle="testimonials">
+                <span class="switch-track"></span>
+                <span class="switch-label">Show on website</span>
+              </label>
+            </div>
+            <p class="hint section-note" data-section-note="testimonials">This section is off. You can add items now — they stay hidden on your site until you switch it on.</p>
+            <div class="list" id="testimonials-list"></div>
+            <button class="btn sm list-add" type="button" data-add="testimonials"><ion-icon name="add"></ion-icon>Add testimonial</button>
+          </div>
+        </section>
+        <!-- ======== Awards (extra section) ======== -->
+        <section class="panel" data-panel="awards" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Awards</h3>
+                <p>Prizes and recognitions. Shown on your Resume page.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" data-section-toggle="awards">
+                <span class="switch-track"></span>
+                <span class="switch-label">Show on website</span>
+              </label>
+            </div>
+            <p class="hint section-note" data-section-note="awards">This section is off. You can add items now — they stay hidden on your site until you switch it on.</p>
+            <div class="list" id="awards-list"></div>
+            <button class="btn sm list-add" type="button" data-add="awards"><ion-icon name="add"></ion-icon>Add award</button>
+          </div>
+        </section>
+        <!-- ======== Articles (extra section) ======== -->
+        <section class="panel" data-panel="articles" hidden>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Articles</h3>
+                <p>Articles and posts you wrote. Shown on your Resume page.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" data-section-toggle="articles">
+                <span class="switch-track"></span>
+                <span class="switch-label">Show on website</span>
+              </label>
+            </div>
+            <p class="hint section-note" data-section-note="articles">This section is off. You can add items now — they stay hidden on your site until you switch it on.</p>
+            <div class="list" id="articles-list"></div>
+            <button class="btn sm list-add" type="button" data-add="articles"><ion-icon name="add"></ion-icon>Add article</button>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>
@@ -515,14 +591,149 @@
     </div>
   </template>
 
-  <!-- Fields: education / experience -->
-  <template id="tpl-timeline-fields">
+  <!-- Month options, copied into every <select data-months> -->
+  <template id="tpl-month-options">
+    <select>
+      <option value="">Month (optional)</option>
+      <option value="01">January</option>
+      <option value="02">February</option>
+      <option value="03">March</option>
+      <option value="04">April</option>
+      <option value="05">May</option>
+      <option value="06">June</option>
+      <option value="07">July</option>
+      <option value="08">August</option>
+      <option value="09">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
+    </select>
+  </template>
+
+  <!-- Fields: education -->
+  <template id="tpl-education-fields">
+    <div>
+      <label class="field"><span>School / institution</span><input type="text" data-field="title"></label>
+      <div class="date-row">
+        <div class="field">
+          <span>Start date</span>
+          <div class="date-pair">
+            <select data-field="start.month" data-months aria-label="Start month"></select>
+            <input type="number" data-field="start.year" placeholder="Year" min="1950" max="2100" aria-label="Start year">
+          </div>
+        </div>
+        <div class="field" data-end-date>
+          <span>End date</span>
+          <div class="date-pair">
+            <select data-field="end.month" data-months aria-label="End month"></select>
+            <input type="number" data-field="end.year" placeholder="Year" min="1950" max="2100" aria-label="End year">
+          </div>
+        </div>
+      </div>
+      <label class="check check-tight present-check">
+        <input type="checkbox" data-field="present">
+        I'm still studying here (Present)
+      </label>
+      <label class="field"><span>Degree &amp; details</span><textarea rows="3" data-field="text"></textarea></label>
+    </div>
+  </template>
+
+  <!-- Fields: experience -->
+  <template id="tpl-experience-fields">
     <div>
       <div class="grid-2">
-        <label class="field"><span>Title</span><input type="text" data-field="title"></label>
-        <label class="field"><span>Period</span><input type="text" data-field="period" placeholder="2022 — 2024"></label>
+        <label class="field"><span>Job title</span><input type="text" data-field="title"></label>
+        <label class="field"><span>Company</span><input type="text" data-field="company"></label>
       </div>
-      <label class="field"><span>Details</span><textarea rows="3" data-field="text"></textarea></label>
+      <div class="date-row">
+        <div class="field">
+          <span>Start date</span>
+          <div class="date-pair">
+            <select data-field="start.month" data-months aria-label="Start month"></select>
+            <input type="number" data-field="start.year" placeholder="Year" min="1950" max="2100" aria-label="Start year">
+          </div>
+        </div>
+        <div class="field" data-end-date>
+          <span>End date</span>
+          <div class="date-pair">
+            <select data-field="end.month" data-months aria-label="End month"></select>
+            <input type="number" data-field="end.year" placeholder="Year" min="1950" max="2100" aria-label="End year">
+          </div>
+        </div>
+      </div>
+      <label class="check check-tight present-check">
+        <input type="checkbox" data-field="present">
+        I currently work here (Present)
+      </label>
+      <label class="field">
+        <span>Responsibilities &amp; achievements</span>
+        <textarea rows="4" data-field="text" placeholder="One per line, e.g. Led the redesign of the mobile app"></textarea>
+        <small class="hint">Optional. Each new line shows as a new line on your site.</small>
+      </label>
+    </div>
+  </template>
+
+  <!-- Fields: testimonial -->
+  <template id="tpl-testimonials-fields">
+    <div class="service-fields">
+      <div class="field">
+        <span>Photo</span>
+        <div class="img-pick icon round drop" data-image-field="avatar" data-max-width="300" data-file-name="testimonial">
+          <div class="thumb"><img alt="" hidden><ion-icon name="person-outline"></ion-icon></div>
+          <div class="acts">
+            <button class="btn sm" type="button" data-pick><ion-icon name="cloud-upload-outline"></ion-icon>Upload</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="grid-2">
+          <label class="field"><span>Name</span><input type="text" data-field="name"></label>
+          <label class="field"><span>Role / company</span><input type="text" data-field="role" placeholder="CEO, Acme"></label>
+        </div>
+        <label class="field"><span>Quote</span><textarea rows="3" data-field="quote"></textarea></label>
+      </div>
+    </div>
+  </template>
+
+  <!-- Fields: award -->
+  <template id="tpl-awards-fields">
+    <div>
+      <div class="grid-2">
+        <label class="field"><span>Award</span><input type="text" data-field="title"></label>
+        <label class="field"><span>Given by</span><input type="text" data-field="issuer" placeholder="e.g. Awwwards"></label>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <span>Date</span>
+          <div class="date-pair">
+            <select data-field="date.month" data-months aria-label="Month"></select>
+            <input type="number" data-field="date.year" placeholder="Year" min="1950" max="2100" aria-label="Year">
+          </div>
+        </div>
+        <label class="field"><span>Link (optional)</span><input type="url" data-field="link" placeholder="https://…"></label>
+      </div>
+      <label class="field"><span>Details (optional)</span><textarea rows="2" data-field="text"></textarea></label>
+    </div>
+  </template>
+
+  <!-- Fields: article -->
+  <template id="tpl-articles-fields">
+    <div>
+      <div class="grid-2">
+        <label class="field"><span>Article title</span><input type="text" data-field="title"></label>
+        <label class="field"><span>Published on</span><input type="text" data-field="publication" placeholder="e.g. Medium, UX Collective"></label>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <span>Date</span>
+          <div class="date-pair">
+            <select data-field="date.month" data-months aria-label="Month"></select>
+            <input type="number" data-field="date.year" placeholder="Year" min="1950" max="2100" aria-label="Year">
+          </div>
+        </div>
+        <label class="field"><span>Link</span><input type="url" data-field="link" placeholder="https://medium.com/…"></label>
+      </div>
+      <label class="field"><span>Short summary (optional)</span><textarea rows="2" data-field="text"></textarea></label>
     </div>
   </template>
 

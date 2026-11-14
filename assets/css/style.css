@@ -2206,3 +2206,29 @@ textarea.form-input::-webkit-resizer {
 
 /* keep the spacing around "|" in the job title */
 .info-content .title { word-spacing: 4px; }
+
+/* company name under the job title (Resume → Experience) */
+.timeline-company {
+  color: var(--white-2);
+  font-size: var(--fs-6);
+  font-weight: var(--fw-400);
+  margin-bottom: 4px;
+}
+
+/* award / article titles that open a link */
+.timeline-link { color: inherit; }
+.timeline-link[href]:hover { color: var(--vegas-gold); }
+
+/* role line under a testimonial name */
+.testimonial-role {
+  color: var(--vegas-gold);
+  font-size: var(--fs-7);
+  margin-bottom: 7px;
+}
+
+/* testimonial photo inside the floating avatar box */
+.testimonials-avatar-box img {
+  border-radius: 14px;
+  object-fit: cover;
+  aspect-ratio: 1;
+}

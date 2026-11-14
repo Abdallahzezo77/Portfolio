@@ -28,22 +28,31 @@ const CONTENT_HEADER =
 const STORAGE_KEY = "portfolio-dashboard";
 const MAX_UPLOAD_MB = 25;
 
+/** A date is { month: "01".."12" or "", year: "2024" }. */
+const EMPTY_DATE = { month: "", year: "" };
+
 /** Empty item used when you press "Add" in each list. */
 const BLANK_ITEMS = {
   socials: { name: "Dribbble", icon: "logo-dribbble", url: "" },
   services: { icon: "", title: "", text: "" },
-  education: { title: "", period: "", text: "" },
-  experience: { title: "", period: "", text: "" },
+  education: { title: "", start: EMPTY_DATE, end: EMPTY_DATE, present: false, text: "" },
+  experience: { title: "", company: "", start: EMPTY_DATE, end: EMPTY_DATE, present: false, text: "" },
   skills: { name: "", value: 50 },
+  testimonials: { avatar: "", name: "", role: "", quote: "" },
+  awards: { title: "", issuer: "", date: EMPTY_DATE, link: "", text: "" },
+  articles: { title: "", publication: "", date: EMPTY_DATE, link: "", text: "" },
 };
 
 /** Which <template> holds the fields for each list. */
 const LIST_FIELDS_TEMPLATE = {
   socials: "tpl-socials-fields",
   services: "tpl-services-fields",
-  education: "tpl-timeline-fields",
-  experience: "tpl-timeline-fields",
+  education: "tpl-education-fields",
+  experience: "tpl-experience-fields",
   skills: "tpl-skills-fields",
+  testimonials: "tpl-testimonials-fields",
+  awards: "tpl-awards-fields",
+  articles: "tpl-articles-fields",
 };
 
 /** Which lists are shown on each dashboard page. */
@@ -52,7 +61,13 @@ const VIEW_LISTS = {
   about: ["services"],
   resume: ["education", "experience"],
   skills: ["skills"],
+  testimonials: ["testimonials"],
+  awards: ["awards"],
+  articles: ["articles"],
 };
+
+/** Optional sections that can be switched on/off for the website. */
+const EXTRA_SECTIONS = ["testimonials", "awards", "articles"];
 
 
 /* ==========================================================================
@@ -721,11 +736,13 @@ function renderList(key) {
 
       bindFields(body, item);
       if (key === "socials") setupSocialRow(body, item);
-      if (key === "services") {
-        const picker = $(".img-pick", body);
-        paintPicker(picker, item.icon);
-        setupPicker(picker, () => ({ obj: item, key: "icon" }));
-      }
+
+      // image pickers inside the row (service icon, testimonial photo)
+      $$(".img-pick[data-image-field]", body).forEach((picker) => {
+        const field = picker.dataset.imageField;
+        paintPicker(picker, item[field]);
+        setupPicker(picker, () => ({ obj: item, key: field }));
+      });
 
       const up = $('[data-action="up"]', row);
       const down = $('[data-action="down"]', row);
@@ -742,20 +759,45 @@ function renderList(key) {
   );
 }
 
-/** Connect every [data-field] input inside a row to item[field]. */
+/**
+ * Connect every [data-field] control inside a row to the item.
+ * Keys can be nested ("start.month"); checkboxes store true/false.
+ */
 function bindFields(root, item) {
+  // fill every month dropdown with the options from <template id="tpl-month-options">
+  $$("select[data-months]", root).forEach((select) => {
+    select.replaceChildren(...cloneTemplate("tpl-month-options").children);
+  });
+
   $$("[data-field]", root).forEach((field) => {
     const key = field.dataset.field;
-    field.value = item[key] ?? "";
-    const output = $(`[data-output="${key}"]`, root);
-    if (output) output.textContent = `${item[key] ?? 0}%`;
+    const value = getPath(item, key);
+    if (field.type === "checkbox") field.checked = Boolean(value);
+    else field.value = value ?? "";
 
-    field.addEventListener("input", () => {
-      item[key] = field.type === "range" ? Number(field.value) : field.value;
-      if (output) output.textContent = `${item[key]}%`;
+    const output = $(`[data-output="${key}"]`, root);
+    if (output) output.textContent = `${value ?? 0}%`;
+
+    field.addEventListener(field.type === "checkbox" ? "change" : "input", () => {
+      let next = field.value;
+      if (field.type === "range") next = Number(field.value);
+      if (field.type === "checkbox") next = field.checked;
+      setPath(item, key, next);
+      if (output) output.textContent = `${next}%`;
+      if (key === "present") updateEndDate(root, item);
       onContentChanged();
     });
   });
+
+  updateEndDate(root, item);
+}
+
+/** "Present" ticked -> the end date is not needed, so it is disabled. */
+function updateEndDate(root, item) {
+  const endField = $("[data-end-date]", root);
+  if (!endField) return;
+  endField.classList.toggle("is-disabled", Boolean(item.present));
+  $$("select, input", endField).forEach((control) => (control.disabled = Boolean(item.present)));
 }
 
 /** Social row: the platform dropdown sets both the name and the icon. */
@@ -773,6 +815,15 @@ function setupSocialRow(body, item) {
     icon.setAttribute("name", item.icon);
     onContentChanged();
   });
+}
+
+/* ---------- Extra sections (testimonials, awards, articles) ---------- */
+
+/** Show the on/off switch and the "this section is off" note. */
+function renderSectionSwitch(key) {
+  const on = Boolean(state.content.sections[key]);
+  $(`[data-section-toggle="${key}"]`).checked = on;
+  $(`[data-section-note="${key}"]`).hidden = on;
 }
 
 /* ---------- Certificates ---------- */
@@ -857,6 +908,13 @@ function renderSidebar() {
   $("#brand-name").textContent = profile.name || "My portfolio";
 
   $$("[data-count]").forEach((counter) => (counter.textContent = state.content[counter.dataset.count].length));
+
+  // extra sections: "Off" pill instead of the counter while switched off
+  EXTRA_SECTIONS.forEach((key) => {
+    const on = Boolean(state.content.sections[key]);
+    $(`[data-section-pill="${key}"]`).hidden = on;
+    $(`[data-count="${key}"]`).hidden = !on;
+  });
   $$(".nav[data-view]").forEach((nav) => nav.classList.toggle("active", nav.dataset.view === state.view));
 }
 
@@ -868,6 +926,7 @@ function refresh() {
   if (view === "categories") renderCategories();
   if (view === "profile") renderProfile();
   if (view === "certs") renderCertificates();
+  if (EXTRA_SECTIONS.includes(view)) renderSectionSwitch(view);
   (VIEW_LISTS[view] || []).forEach(renderList);
   renderTopBar();
 }
@@ -892,6 +951,20 @@ function showScreen(name) {
 /* ==========================================================================
    10. LOGIN / LOGOUT
    ========================================================================== */
+
+/**
+ * Address of the public website.
+ * Online, the site is simply the folder above /admin/
+ * (e.g. https://abdallahzezo77.github.io/Portfolio/).
+ */
+function liveSiteUrl() {
+  if (location.protocol.startsWith("http") && location.pathname.includes("/admin")) {
+    return new URL("../", location.href).href;
+  }
+  const owner = state.config.owner.toLowerCase();
+  const repo = state.config.repo;
+  return repo.toLowerCase() === `${owner}.github.io` ? `https://${owner}.github.io/` : `https://${owner}.github.io/${repo}/`;
+}
 
 /** On GitHub Pages we can guess the username and repo from the address. */
 function guessRepoFromUrl() {
@@ -981,21 +1054,46 @@ function downloadBackup() {
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
+/**
+ * Make sure the content has every list the dashboard expects, and upgrade
+ * older entries ("period" text -> start/end dates, details -> company).
+ */
+function normalizeContent(content) {
+  ["socials", "services", "certifications", "education", "experience", "skills",
+    "categories", "projects", ...EXTRA_SECTIONS].forEach((key) => (content[key] ||= []));
+  content.profile ||= {};
+  content.sections ||= {};
+  EXTRA_SECTIONS.forEach((key) => (content.sections[key] ??= false));
+
+  const yearOf = (text) => (String(text || "").match(/\d{4}/) || [""])[0];
+  ["education", "experience"].forEach((key) => {
+    content[key].forEach((entry) => {
+      if (!("period" in entry)) return;
+      const [from = "", to = ""] = entry.period.split(/[-—–]/);
+      entry.start = { month: "", year: yearOf(from) };
+      entry.present = /present/i.test(to);
+      entry.end = { month: "", year: entry.present ? "" : yearOf(to) };
+      if (key === "experience" && !("company" in entry)) {
+        entry.company = (entry.text || "").trim();
+        entry.text = "";
+      }
+      delete entry.period;
+    });
+  });
+  return content;
+}
+
 /** Load the content and open the dashboard. */
 async function startDashboard() {
   const content = await fetchContent();
-  ["socials", "services", "certifications", "education", "experience", "skills", "categories", "projects"]
-    .forEach((key) => (content[key] ||= []));
-  content.profile ||= {};
+  normalizeContent(content);
 
   state.content = content;
   state.savedJson = JSON.stringify(content);
   state.uploads = {};
   state.status = { text: "", kind: "" };
 
-  const { owner, repo } = state.config;
-  const isUserSite = repo.toLowerCase() === `${owner.toLowerCase()}.github.io`;
-  $("#site-link").href = isUserSite ? `https://${owner}.github.io/` : `https://${owner}.github.io/${repo}/`;
+  $("#site-link").href = liveSiteUrl();
 
   fillStaticFields();
   showScreen("app");
@@ -1073,6 +1171,13 @@ function attachEvents() {
     button.addEventListener("click", () => {
       const key = button.dataset.add;
       state.content[key].push(deepCopy(BLANK_ITEMS[key]));
+      refresh();
+    }));
+
+  // extra sections: on/off switches
+  $$("[data-section-toggle]").forEach((toggle) =>
+    toggle.addEventListener("change", () => {
+      state.content.sections[toggle.dataset.sectionToggle] = toggle.checked;
       refresh();
     }));
 

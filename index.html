@@ -115,6 +115,12 @@
           <ul class="service-list" data-service-list></ul>
         </section>
 
+        <!-- Testimonials (hidden until switched on in the dashboard) -->
+        <section class="testimonials" data-testimonials-section hidden>
+          <h3 class="h3 testimonials-title">Testimonials</h3>
+          <ul class="testimonials-list has-scrollbar" data-testimonial-list></ul>
+        </section>
+
         <!-- Certifications (click one to open it in the modal) -->
         <section class="testimonials" data-certifications>
           <h3 class="h3 testimonials-title">Certifications</h3>
@@ -178,6 +184,24 @@
             <h3 class="h3">Experience</h3>
           </div>
           <ol class="timeline-list" data-experience-list></ol>
+        </section>
+
+        <!-- Awards (hidden until switched on in the dashboard) -->
+        <section class="timeline" data-awards-section hidden>
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="trophy-outline"></ion-icon></div>
+            <h3 class="h3">Awards</h3>
+          </div>
+          <ol class="timeline-list" data-award-list></ol>
+        </section>
+
+        <!-- Articles (hidden until switched on in the dashboard) -->
+        <section class="timeline" data-articles-section hidden>
+          <div class="title-wrapper">
+            <div class="icon-box"><ion-icon name="newspaper-outline"></ion-icon></div>
+            <h3 class="h3">Articles</h3>
+          </div>
+          <ol class="timeline-list" data-article-list></ol>
         </section>
 
         <!-- Skills -->
@@ -328,7 +352,55 @@
     </li>
   </template>
 
-  <!-- Education / experience entry -->
+  <!-- Testimonial card -->
+  <template id="tpl-testimonial">
+    <li class="testimonials-item">
+      <div class="content-card" data-testimonials-item>
+        <figure class="testimonials-avatar-box">
+          <img width="60" alt="" data-slot="avatar">
+        </figure>
+        <h4 class="h4 testimonials-item-title" data-slot="name"></h4>
+        <p class="testimonial-role" data-slot="role"></p>
+        <div class="testimonials-text" data-testimonials-text>
+          <p data-slot="quote"></p>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <!-- Experience entry (job title, company, dates, responsibilities) -->
+  <template id="tpl-experience">
+    <li class="timeline-item">
+      <h4 class="h4 timeline-item-title" data-slot="title"></h4>
+      <p class="timeline-company" data-slot="company"></p>
+      <span data-slot="period"></span>
+      <p class="timeline-text" data-slot="text"></p>
+    </li>
+  </template>
+
+  <!-- Award entry -->
+  <template id="tpl-award">
+    <li class="timeline-item">
+      <h4 class="h4 timeline-item-title">
+        <a class="timeline-link" target="_blank" rel="noopener" data-slot="title"></a>
+      </h4>
+      <span data-slot="meta"></span>
+      <p class="timeline-text" data-slot="text"></p>
+    </li>
+  </template>
+
+  <!-- Article entry -->
+  <template id="tpl-article">
+    <li class="timeline-item">
+      <h4 class="h4 timeline-item-title">
+        <a class="timeline-link" target="_blank" rel="noopener" data-slot="title"></a>
+      </h4>
+      <span data-slot="meta"></span>
+      <p class="timeline-text" data-slot="text"></p>
+    </li>
+  </template>
+
+  <!-- Education entry -->
   <template id="tpl-timeline">
     <li class="timeline-item">
       <h4 class="h4 timeline-item-title" data-slot="title"></h4>

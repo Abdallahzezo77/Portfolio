@@ -153,15 +153,47 @@
 
   /* ----------------------------------------------------------------- resume */
 
-  const timelineItem = (entry) => {
-    const item = cloneTemplate("tpl-timeline");
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  /** { month: "09", year: "2015" } -> "Sep 2015"  (month is optional -> "2015") */
+  const formatDate = (date) => {
+    if (!date || !date.year) return "";
+    const month = MONTHS[parseInt(date.month, 10) - 1];
+    return month ? `${month} ${date.year}` : String(date.year);
+  };
+
+  /** Start + end (or "Present") -> "Sep 2015 — Present" */
+  const formatPeriod = (entry) => {
+    const start = formatDate(entry.start);
+    const end = entry.present ? "Present" : formatDate(entry.end);
+    return [start, end].filter(Boolean).join(" — ");
+  };
+
+  const fillTimeline = (templateId, entry) => {
+    const item = cloneTemplate(templateId);
     slot(item, "title").textContent = entry.title || "";
-    slot(item, "period").textContent = entry.period || "";
-    slot(item, "text").textContent = entry.text || "";
+    slot(item, "period").textContent = formatPeriod(entry);
+    const text = slot(item, "text");
+    text.textContent = entry.text || "";
+    text.hidden = !entry.text;
     return item;
   };
-  fillList(find("data-education-list"), asArray(content.education).map(timelineItem));
-  fillList(find("data-experience-list"), asArray(content.experience).map(timelineItem));
+
+  fillList(
+    find("data-education-list"),
+    asArray(content.education).map((entry) => fillTimeline("tpl-timeline", entry))
+  );
+
+  fillList(
+    find("data-experience-list"),
+    asArray(content.experience).map((entry) => {
+      const item = fillTimeline("tpl-experience", entry);
+      const company = slot(item, "company");
+      company.textContent = entry.company || "";
+      company.hidden = !entry.company;
+      return item;
+    })
+  );
 
   fillList(
     find("data-skill-list"),
@@ -175,6 +207,70 @@
       slot(item, "bar").style.width = `${percent}%`;
       return item;
     })
+  );
+
+  /* ------------------------------------------------------ optional sections */
+  // Testimonials, awards and articles only appear when they are switched on
+  // in the dashboard AND have at least one item.
+
+  const sections = content.sections || {};
+
+  /** Show a section only if it is switched on and has items. */
+  const showSection = (attr, key) => {
+    const items = asArray(content[key]);
+    const visible = Boolean(sections[key]) && items.length > 0;
+    find(attr).hidden = !visible;
+    return visible ? items : [];
+  };
+
+  /** Set a link if there is one; otherwise keep plain text. */
+  const setOptionalLink = (el, url) => {
+    const safe = safeUrl(url);
+    if (safe) el.href = safe;
+    else el.removeAttribute("href");
+  };
+
+  fillList(
+    find("data-testimonial-list"),
+    showSection("data-testimonials-section", "testimonials").map((entry) => {
+      const item = cloneTemplate("tpl-testimonial");
+      const avatar = slot(item, "avatar");
+      if (entry.avatar) {
+        avatar.src = safeUrl(entry.avatar);
+        avatar.alt = entry.name || "";
+      } else {
+        avatar.closest("figure").remove();
+      }
+      slot(item, "name").textContent = entry.name || "";
+      const role = slot(item, "role");
+      role.textContent = entry.role || "";
+      role.hidden = !entry.role;
+      slot(item, "quote").textContent = entry.quote || "";
+      return item;
+    })
+  );
+
+  /** Awards and articles share the same layout: title (link), meta line, text. */
+  const linkedEntry = (templateId, entry, source) => {
+    const item = cloneTemplate(templateId);
+    const title = slot(item, "title");
+    title.textContent = entry.title || "";
+    setOptionalLink(title, entry.link);
+    slot(item, "meta").textContent = [entry[source], formatDate(entry.date)].filter(Boolean).join(" · ");
+    const text = slot(item, "text");
+    text.textContent = entry.text || "";
+    text.hidden = !entry.text;
+    return item;
+  };
+
+  fillList(
+    find("data-award-list"),
+    showSection("data-awards-section", "awards").map((entry) => linkedEntry("tpl-award", entry, "issuer"))
+  );
+
+  fillList(
+    find("data-article-list"),
+    showSection("data-articles-section", "articles").map((entry) => linkedEntry("tpl-article", entry, "publication"))
   );
 
   /* -------------------------------------------------------------- portfolio */
