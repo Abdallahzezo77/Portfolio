@@ -28,7 +28,89 @@
 
 
   <!-- ====================================================================
-       LOGIN SCREEN — connect the dashboard to the GitHub repo
+       SIGN-IN SCREEN — name + password (unlocks the saved GitHub key)
+       ==================================================================== -->
+  <main class="login" id="password-screen" hidden>
+    <form class="login-card" id="password-form" novalidate>
+
+      <div class="lock-badge"><ion-icon name="lock-closed-outline"></ion-icon></div>
+      <h1>Portfolio dashboard</h1>
+      <p class="login-sub">Sign in with your name and password.</p>
+
+      <label class="field">
+        <span>Name</span>
+        <input type="text" name="name" autocomplete="username" spellcheck="false">
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <span class="password-wrap">
+          <input type="password" name="password" autocomplete="current-password">
+          <button class="icon-btn" type="button" title="Show password" data-toggle-password><ion-icon name="eye-outline"></ion-icon></button>
+        </span>
+      </label>
+
+      <label class="check">
+        <input type="checkbox" name="remember">
+        Keep me signed in on this device
+      </label>
+
+      <small class="hint err login-error" id="password-error" role="alert"></small>
+
+      <button class="btn primary btn-block" type="submit" id="password-button">
+        <span class="spin" hidden></span>
+        <span class="btn-label">Sign in</span>
+      </button>
+
+      <button class="link-btn" type="button" id="use-token-button">Forgot your password? Sign in with a GitHub token</button>
+
+    </form>
+  </main>
+
+
+  <!-- ====================================================================
+       CREATE / CHANGE LOGIN — choose the name + password
+       ==================================================================== -->
+  <main class="login" id="setup-screen" hidden>
+    <form class="login-card" id="setup-form" novalidate>
+
+      <div class="lock-badge"><ion-icon name="key-outline"></ion-icon></div>
+      <h1 id="setup-title">Create your login</h1>
+      <p class="login-sub">From now on the dashboard asks for this name and password. Without them nobody can open it or change your site.</p>
+
+      <label class="field">
+        <span>Name</span>
+        <input type="text" name="name" autocomplete="username" spellcheck="false">
+      </label>
+      <label class="field">
+        <span>New password</span>
+        <span class="password-wrap">
+          <input type="password" name="password" autocomplete="new-password">
+          <button class="icon-btn" type="button" title="Show password" data-toggle-password><ion-icon name="eye-outline"></ion-icon></button>
+        </span>
+      </label>
+      <label class="field">
+        <span>Confirm password</span>
+        <span class="password-wrap">
+          <input type="password" name="confirm" autocomplete="new-password">
+          <button class="icon-btn" type="button" title="Show password" data-toggle-password><ion-icon name="eye-outline"></ion-icon></button>
+        </span>
+      </label>
+      <small class="hint setup-hint">At least 10 characters. A short sentence is strong and easy to remember.</small>
+
+      <small class="hint err login-error" id="setup-error" role="alert"></small>
+
+      <button class="btn primary btn-block" type="submit" id="setup-button">
+        <span class="spin" hidden></span>
+        <span class="btn-label">Save and continue</span>
+      </button>
+      <button class="link-btn" type="button" id="setup-cancel" hidden>Cancel</button>
+
+    </form>
+  </main>
+
+
+  <!-- ====================================================================
+       TOKEN SCREEN — first setup, or when the password is forgotten
        ==================================================================== -->
   <main class="login" id="login-screen" hidden>
     <form class="login-card" id="login-form" novalidate>
@@ -67,8 +149,8 @@
       </div>
 
       <label class="check">
-        <input type="checkbox" name="remember" checked>
-        Remember me on this device
+        <input type="checkbox" name="remember">
+        Keep me signed in on this device
       </label>
 
       <small class="hint err login-error" id="login-error"></small>
@@ -77,6 +159,8 @@
         <span class="spin" hidden></span>
         <span class="btn-label">Connect</span>
       </button>
+
+      <button class="link-btn" type="button" id="back-to-password" hidden>← Back to name &amp; password</button>
 
     </form>
   </main>
@@ -150,6 +234,9 @@
         </a>
         <button class="nav" type="button" id="backup-button">
           <ion-icon name="download-outline"></ion-icon>Download backup
+        </button>
+        <button class="nav" type="button" id="change-login-button">
+          <ion-icon name="key-outline"></ion-icon>Name &amp; password
         </button>
         <button class="nav" type="button" id="logout-button">
           <ion-icon name="log-out-outline"></ion-icon>Log out

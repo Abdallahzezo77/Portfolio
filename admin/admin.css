@@ -55,6 +55,16 @@ ion-icon { font-size: 18px; flex-shrink: 0; }
 .check { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; margin: 4px 0 20px; }
 .check input { accent-color: var(--accent); width: 16px; height: 16px; }
 
+/* ---------- sign-in extras ---------- */
+.lock-badge { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: hsla(41, 99%, 57%, .12); color: var(--accent); margin-bottom: 16px; }
+.lock-badge ion-icon { font-size: 24px; }
+.password-wrap { position: relative; display: block; }
+.password-wrap input { padding-right: 44px; }
+.password-wrap .icon-btn { position: absolute; top: 6px; right: 6px; }
+.link-btn { display: block; margin: 14px auto 0; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.link-btn:hover { color: var(--accent); }
+.setup-hint { display: block; margin: -6px 0 14px; }
+
 /* ---------- fields ---------- */
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; min-width: 0; }
 .field > span { font-size: 13px; color: var(--muted); font-weight: 500; }

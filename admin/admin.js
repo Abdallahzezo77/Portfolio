@@ -4,7 +4,9 @@
    admin.js — Portfolio dashboard
    --------------------------------------------------------------------------
    How it works (no backend needed):
-   1. You log in with a GitHub access token.
+   1. You sign in with your name + password. They unlock (decrypt) your
+      GitHub access token, which is stored encrypted in admin/access.json.
+      (First time / forgotten password: sign in with the token itself.)
    2. The dashboard downloads data/content.js from your GitHub repo.
    3. You edit the content; new images/PDFs wait in memory.
    4. "Publish" sends everything to GitHub as ONE commit.
@@ -26,6 +28,11 @@ const CONTENT_HEADER =
   "/* Portfolio content — edited by the dashboard (admin/). Keep the JSON valid. */\n" +
   "window.PORTFOLIO_CONTENT = ";
 const STORAGE_KEY = "portfolio-dashboard";
+
+// name + password login
+const ACCESS_FILE = "admin/access.json";   // encrypted GitHub token (safe to be public)
+const PBKDF2_ITERATIONS = 600000;          // slows down password guessing
+const MIN_PASSWORD_LENGTH = 10;
 const MAX_UPLOAD_MB = 25;
 
 /** A date is { month: "01".."12" or "", year: "2024" }. */
@@ -87,6 +94,8 @@ const state = {
   busy: false,         // true while publishing
   dialogIndex: -1,     // project being edited (-1 = new project)
   dialogDraft: null,   // copy of that project while the dialog is open
+  access: null,        // contents of admin/access.json (null = no login created yet)
+  accessName: "",      // name used to sign in (to pre-fill "change password")
 };
 
 
@@ -288,41 +297,49 @@ async function fetchContent() {
   return JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
 }
 
+/**
+ * Save several files to the repo as ONE commit.
+ * files: [{ path, content, encoding: "utf-8" | "base64" }]
+ */
+async function commitFiles(files, message) {
+  const branch = encodeURIComponent(state.config.branch);
+
+  // a) where the branch is now
+  const ref = await github(`/git/ref/heads/${branch}`);
+  const headSha = ref.object.sha;
+  const headCommit = await github(`/git/commits/${headSha}`);
+
+  // b) upload every file as a "blob"
+  const tree = [];
+  for (const file of files) {
+    const blob = await github("/git/blobs", { method: "POST", body: { content: file.content, encoding: file.encoding } });
+    tree.push({ path: file.path, mode: "100644", type: "blob", sha: blob.sha });
+  }
+
+  // c) make the commit and move the branch to it
+  const newTree = await github("/git/trees", { method: "POST", body: { base_tree: headCommit.tree.sha, tree } });
+  const newCommit = await github("/git/commits", {
+    method: "POST",
+    body: { message, tree: newTree.sha, parents: [headSha] },
+  });
+  await github(`/git/refs/heads/${branch}`, { method: "PATCH", body: { sha: newCommit.sha } });
+}
+
 /** Send content + new files to GitHub as a single commit. */
 async function publish() {
   if (state.busy || !hasChanges()) return;
   state.busy = true;
-  const branch = encodeURIComponent(state.config.branch);
-  const files = Object.entries(state.uploads);
+  const uploads = Object.entries(state.uploads);
 
   try {
-    setStatus(files.length ? `Uploading ${files.length} file${files.length > 1 ? "s" : ""}…` : "Publishing…");
-
-    // a) where the branch is now
-    const ref = await github(`/git/ref/heads/${branch}`);
-    const headSha = ref.object.sha;
-    const headCommit = await github(`/git/commits/${headSha}`);
-
-    // b) upload every new file as a "blob"
-    const tree = [];
-    for (const [path, base64] of files) {
-      const blob = await github("/git/blobs", { method: "POST", body: { content: base64, encoding: "base64" } });
-      tree.push({ path, mode: "100644", type: "blob", sha: blob.sha });
-    }
-
-    // c) upload the updated content file
-    setStatus("Publishing…");
-    const contentText = CONTENT_HEADER + JSON.stringify(state.content, null, 2) + ";\n";
-    const contentBlob = await github("/git/blobs", { method: "POST", body: { content: contentText, encoding: "utf-8" } });
-    tree.push({ path: CONTENT_PATH, mode: "100644", type: "blob", sha: contentBlob.sha });
-
-    // d) make the commit and move the branch to it
-    const newTree = await github("/git/trees", { method: "POST", body: { base_tree: headCommit.tree.sha, tree } });
-    const newCommit = await github("/git/commits", {
-      method: "POST",
-      body: { message: "Update portfolio content from dashboard", tree: newTree.sha, parents: [headSha] },
+    setStatus(uploads.length ? `Uploading ${uploads.length} file${uploads.length > 1 ? "s" : ""}…` : "Publishing…");
+    const files = uploads.map(([path, content]) => ({ path, content, encoding: "base64" }));
+    files.push({
+      path: CONTENT_PATH,
+      content: CONTENT_HEADER + JSON.stringify(state.content, null, 2) + ";\n",
+      encoding: "utf-8",
     });
-    await github(`/git/refs/heads/${branch}`, { method: "PATCH", body: { sha: newCommit.sha } });
+    await commitFiles(files, "Update portfolio content from dashboard");
 
     state.savedJson = JSON.stringify(state.content);
     state.uploads = {};
@@ -333,6 +350,76 @@ async function publish() {
     state.busy = false;
     renderTopBar();
   }
+}
+
+
+/* ==========================================================================
+   5b. NAME + PASSWORD (encrypts the GitHub token)
+   --------------------------------------------------------------------------
+   The token is encrypted with AES-256-GCM. The key comes from your
+   name + password through PBKDF2 (600,000 rounds), so admin/access.json
+   is useless without them. Nothing secret is ever stored in plain text.
+   ========================================================================== */
+
+const toBytes = (base64) => Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+const fromBytes = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+
+/** Name + password -> AES key. The name is not case-sensitive. */
+async function deriveKey(name, password, salt, iterations) {
+  const secret = new TextEncoder().encode(`${name.trim().toLowerCase()}\n${password}`);
+  const material = await crypto.subtle.importKey("raw", secret, "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt, iterations, hash: "SHA-256" },
+    material,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+
+/** Encrypt the GitHub settings (owner, repo, branch, token). */
+async function lockConfig(config, name, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(name, password, salt, PBKDF2_ITERATIONS);
+  const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(config)));
+  return {
+    version: 1,
+    note: "Encrypted dashboard login. Useless without the name and password.",
+    kdf: "PBKDF2-SHA256",
+    iterations: PBKDF2_ITERATIONS,
+    salt: fromBytes(salt),
+    iv: fromBytes(iv),
+    data: fromBytes(data),
+  };
+}
+
+/** Decrypt with name + password. Throws if either is wrong. */
+async function unlockConfig(access, name, password) {
+  const key = await deriveKey(name, password, toBytes(access.salt), access.iterations);
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: toBytes(access.iv) }, key, toBytes(access.data));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+
+/** Read admin/access.json from the website (null if there is no login yet). */
+async function loadAccessFile() {
+  try {
+    const response = await fetch(`access.json?t=${Date.now()}`, { cache: "no-store" });
+    return response.ok ? await response.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Encrypt the current GitHub settings and save them to the repo. */
+async function saveAccess(name, password) {
+  const access = await lockConfig(state.config, name, password);
+  await commitFiles(
+    [{ path: ACCESS_FILE, content: JSON.stringify(access, null, 2) + "\n", encoding: "utf-8" }],
+    "Update dashboard login"
+  );
+  state.access = access;
+  state.accessName = name.trim();
 }
 
 
@@ -954,11 +1041,18 @@ function showView(view) {
   window.scrollTo(0, 0);
 }
 
-/** Show exactly one of: loading, login, app. */
+/** Show exactly one screen: loading, password, setup, login (token) or app. */
 function showScreen(name) {
-  $("#loading-screen").hidden = name !== "loading";
-  $("#login-screen").hidden = name !== "login";
-  $("#app-screen").hidden = name !== "app";
+  ["loading", "password", "setup", "login", "app"].forEach((screen) => {
+    $(`#${screen}-screen`).hidden = screen !== name;
+  });
+}
+
+/** Show or hide the spinner inside a button. */
+function setButtonBusy(button, busy, label) {
+  button.disabled = busy;
+  $(".spin", button).hidden = !busy;
+  $(".btn-label", button).textContent = label;
 }
 
 
@@ -989,6 +1083,105 @@ function guessRepoFromUrl() {
   return { owner: match[1], repo };
 }
 
+/** Sign-in entry point: name + password if a login exists, else the token screen. */
+async function showSignIn(message = "") {
+  state.access ||= await loadAccessFile();
+  if (state.access) showPasswordLogin(message);
+  else showLogin(message);
+}
+
+function showPasswordLogin(message = "") {
+  const form = $("#password-form");
+  form.elements.password.value = "";
+  if (!form.elements.name.value) form.elements.name.value = state.accessName;
+  $("#password-error").textContent = message;
+  showScreen("password");
+  (form.elements.name.value ? form.elements.password : form.elements.name).focus();
+}
+
+/** Name + password -> unlock the token -> open the dashboard. */
+async function handlePasswordLogin(event) {
+  event.preventDefault();
+  const form = event.target;
+  const name = form.elements.name.value;
+  const password = form.elements.password.value;
+  const error = $("#password-error");
+  const button = $("#password-button");
+
+  if (!name.trim() || !password) {
+    error.textContent = "Enter your name and password.";
+    return;
+  }
+
+  setButtonBusy(button, true, "Checking…");
+  error.textContent = "";
+  try {
+    try {
+      state.config = await unlockConfig(state.access, name, password);
+    } catch {
+      throw new Error("Wrong name or password.");
+    }
+    state.accessName = name.trim();
+    try {
+      await startDashboard();
+    } catch (problem) {
+      if (problem.status === 401) {
+        // the saved GitHub token expired: a new one is needed
+        state.config = { ...state.config, token: "" };
+        showLogin("Your GitHub key has expired. Paste a new access token, then choose your password again.");
+        return;
+      }
+      throw problem;
+    }
+    saveConfig(state.config, form.elements.remember.checked);
+    form.elements.password.value = "";
+  } catch (problem) {
+    error.textContent = problem.message;
+    form.elements.password.select();
+  } finally {
+    setButtonBusy(button, false, "Sign in");
+  }
+}
+
+/** Create or change the name + password. required = first time (no cancel). */
+function showSetup({ required }) {
+  const form = $("#setup-form");
+  form.reset();
+  form.elements.name.value = state.accessName;
+  $("#setup-title").textContent = required ? "Create your login" : "Change name & password";
+  $("#setup-cancel").hidden = required;
+  $("#setup-error").textContent = "";
+  showScreen("setup");
+  (form.elements.name.value ? form.elements.password : form.elements.name).focus();
+}
+
+async function handleSetup(event) {
+  event.preventDefault();
+  const form = event.target;
+  const name = form.elements.name.value.trim();
+  const password = form.elements.password.value;
+  const error = $("#setup-error");
+  const button = $("#setup-button");
+
+  if (name.length < 2) return (error.textContent = "Choose a name (at least 2 characters).");
+  if (password.length < MIN_PASSWORD_LENGTH) return (error.textContent = `Use at least ${MIN_PASSWORD_LENGTH} characters.`);
+  if (password !== form.elements.confirm.value) return (error.textContent = "The two passwords don't match.");
+
+  setButtonBusy(button, true, "Saving…");
+  error.textContent = "";
+  try {
+    await saveAccess(name, password);
+    saveConfig(state.config, false); // from now on, ask for the password next time
+    form.reset();
+    showScreen("app");
+    setStatus("Login saved ✓ Next time, sign in with your name and password.", "ok");
+  } catch (problem) {
+    error.textContent = "Couldn't save the login: " + problem.message;
+  } finally {
+    setButtonBusy(button, false, "Save and continue");
+  }
+}
+
 function showLogin(message = "") {
   const form = $("#login-form");
   const guess = guessRepoFromUrl();
@@ -997,6 +1190,7 @@ function showLogin(message = "") {
   form.elements.branch.value = state.config?.branch || "main";
   form.elements.token.value = "";
   $("#login-error").textContent = message;
+  $("#back-to-password").hidden = !state.access;
   updateTokenLink();
   showScreen("login");
 }
@@ -1025,9 +1219,7 @@ async function handleLogin(event) {
     return;
   }
 
-  button.disabled = true;
-  $(".spin", button).hidden = false;
-  $(".btn-label", button).textContent = "Connecting…";
+  setButtonBusy(button, true, "Connecting…");
   error.textContent = "";
 
   state.config = { owner: value("owner"), repo: value("repo"), branch: value("branch") || "main", token: value("token") };
@@ -1035,12 +1227,12 @@ async function handleLogin(event) {
     await startDashboard();
     saveConfig(state.config, form.elements.remember.checked);
     form.elements.token.value = "";
+    // signed in with the token: ask for a (new) name + password
+    showSetup({ required: !state.access });
   } catch (problem) {
     error.textContent = problem.message;
   } finally {
-    button.disabled = false;
-    $(".spin", button).hidden = true;
-    $(".btn-label", button).textContent = "Connect";
+    setButtonBusy(button, false, "Connect");
   }
 }
 
@@ -1053,9 +1245,10 @@ function logout() {
     return;
   }
   clearConfig();
+  state.config = null;
   state.content = null;
   state.uploads = {};
-  showLogin();
+  showSignIn();
 }
 
 /** Save a copy of all content to your computer. */
@@ -1120,9 +1313,29 @@ async function startDashboard() {
    ========================================================================== */
 
 function attachEvents() {
-  // login
+  // sign in with name + password
+  $("#password-form").addEventListener("submit", handlePasswordLogin);
+  $("#use-token-button").addEventListener("click", () => showLogin());
+
+  // create / change the name + password
+  $("#setup-form").addEventListener("submit", handleSetup);
+  $("#setup-cancel").addEventListener("click", () => showScreen("app"));
+  $("#change-login-button").addEventListener("click", () => showSetup({ required: false }));
+
+  // sign in with a GitHub token (first time / forgotten password)
   $("#login-form").addEventListener("submit", handleLogin);
   $("#login-form").addEventListener("input", updateTokenLink);
+  $("#back-to-password").addEventListener("click", () => showPasswordLogin());
+
+  // eye buttons: show / hide the password
+  $$("[data-toggle-password]").forEach((button) =>
+    button.addEventListener("click", () => {
+      const input = button.previousElementSibling;
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      button.title = show ? "Hide password" : "Show password";
+      $("ion-icon", button).setAttribute("name", show ? "eye-off-outline" : "eye-outline");
+    }));
 
   // sidebar
   $$(".nav[data-view]").forEach((nav) => nav.addEventListener("click", () => showView(nav.dataset.view)));
@@ -1224,13 +1437,20 @@ function attachEvents() {
 
 (async function boot() {
   attachEvents();
-  state.config = loadConfig();
-  if (!state.config) return showLogin();
-
   showScreen("loading");
+  state.access = await loadAccessFile();
+  state.config = loadConfig();
+
+  // not signed in on this device -> ask for name + password
+  if (!state.config) return showSignIn();
+
   try {
     await startDashboard();
+    // signed in from before, but no name + password created yet
+    if (!state.access) showSetup({ required: true });
   } catch (error) {
-    showLogin(error.message);
+    clearConfig();
+    state.config = null;
+    showSignIn(error.message);
   }
 })();
