@@ -2236,12 +2236,13 @@ textarea.form-input::-webkit-resizer {
 /*-----------------------------------*\
   #PROFILE PHOTO SIZE
   Fixed square size per screen width, so any uploaded photo
-  (big, small, portrait or landscape) shows as a correct circle.
+  (big, small, portrait or landscape) shows as a full circle that
+  is never cut by the card, with the name centred next to it.
 \*-----------------------------------*/
 
 .avatar-box {
   flex-shrink: 0;
-  width: 80px;          /* phones */
+  width: 80px;          /* phones: card shows 80px of content when closed */
   line-height: 0;
 }
 
@@ -2254,10 +2255,28 @@ textarea.form-input::-webkit-resizer {
   border-radius: 50%;
 }
 
+/* photo + name row fills the closed card, so both sit in its vertical middle */
+.sidebar-info {
+  min-height: 80px;
+}
+
+/* name sits centred beside the photo (no extra space above it) */
+.info-content .name {
+  margin-top: 0;
+}
+
+@media (min-width: 450px) {
+  .avatar-box { width: 96px; }       /* large phones */
+  .sidebar-info { min-height: 108px; }
+}
+
 @media (min-width: 580px) {
-  .avatar-box { width: 110px; }  /* tablets */
+  .avatar-box { width: 110px; }      /* tablets */
+  .sidebar-info { min-height: 118px; }
 }
 
 @media (min-width: 1250px) {
-  .avatar-box { width: 150px; }  /* desktop sidebar */
+  .avatar-box { width: 150px; }      /* desktop: photo above the name */
+  .sidebar-info { min-height: 0; }
+  .info-content .name { margin-top: 20px; }
 }
