@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "note": "Encrypted dashboard login. Useless without the name and password.",
+  "kdf": "PBKDF2-SHA256",
+  "iterations": 600000,
+  "salt": "1VoCQ7bbCgSJoGIFhEHjgg==",
+  "iv": "t6CPcDTanWI+O+77",
+  "data": "7VQCk4YHwvy1Ktvz2RQ5WFwUsuTWMq86WK2hjE6LGP0apGM7jLIZ3qDAaeSNE2Cr2wiSPI9BmEIGn9cehxoQlyW60Lvo/X+E+eXRKDjQ8UsX0VqKuprNK0uC4bDjsOn0utipYr84UO8UxaVjaI1e3QSfj0fL/Pu2dXTY9VR0EQPq1JaplTSpJh7O/DRVCdLEAi6nQ9FvbaoM//XKoAQvMsXLj1FXKFOypQfonvevf/Z1ZnqWIQ=="
+}
