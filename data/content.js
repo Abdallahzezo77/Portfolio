@@ -2,7 +2,7 @@
 window.PORTFOLIO_CONTENT = {
   "profile": {
     "name": "Abdallah Elsayed",
-    "title": "Sr. UI&UX Designer - Senior Product Designer ",
+    "title": "Sr. UI&UX Designer ",
     "avatar": "assets/images/Abdallah.png",
     "email": "Abdallah.Elsayed.Ramadan@gmail.com",
     "phone": "+201157994980",
