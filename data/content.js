@@ -24,6 +24,11 @@ window.PORTFOLIO_CONTENT = {
       "name": "Behance",
       "url": "https://www.behance.net/abdallahzezo",
       "icon": "logo-behance"
+    },
+    {
+      "name": "Dribbble",
+      "icon": "logo-dribbble",
+      "url": "https://dribbble.com/abdallah-elsayed-ramadan"
     }
   ],
   "about": "I'm a UI Developer with a passion for creating beautiful and user-friendly interfaces. I have extensive experience in UI & UX design. I enjoy turning ideas into amazing digital experiences that people love to use. Let's work together to create something great",
@@ -75,6 +80,21 @@ window.PORTFOLIO_CONTENT = {
     }
   ],
   "experience": [
+    {
+      "title": "Sr. UI/UX Designer ",
+      "period": "2026 - Present ",
+      "text": "LamdaX"
+    },
+    {
+      "title": "Sr. UI/UX Designer ",
+      "period": "2024-2026",
+      "text": "W88 Information Technology "
+    },
+    {
+      "title": "UI/UX Designer ",
+      "period": "2023-2024",
+      "text": "MSG Technology "
+    },
     {
       "title": "Ui Developer",
       "period": "2022 — 2023",
